@@ -1,5 +1,6 @@
 package com.appsolve.wearther_backend.Location.Service;
 
+import com.appsolve.wearther_backend.Location.Dto.LocationPostRequestDto;
 import com.appsolve.wearther_backend.Location.Entity.LocationEntity;
 import com.appsolve.wearther_backend.Location.Repository.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +11,12 @@ public class LocationService {
     @Autowired
     private LocationRepository locationRepository;
 
-    public LocationEntity addLocation(Long locationId, Long userNumber, String locationInfo, Integer locationIndex) {
+    public LocationEntity addLocation(LocationPostRequestDto locationRequest) {
         LocationEntity location = new LocationEntity();
-        location.setLocationId(locationId);
-        location.setUserNumber(userNumber);
-        location.setLocationInfo(locationInfo);
-        location.setLocationIndex(locationIndex);
+        location.setLocationId(locationRequest.getLocationId());
+        location.setUserNumber(locationRequest.getUserNumber());
+        location.setLocationInfo(locationRequest.getLocationInfo());
+        location.setLocationIndex(locationRequest.getLocationIndex());
         return locationRepository.save(location);
     }
 }
