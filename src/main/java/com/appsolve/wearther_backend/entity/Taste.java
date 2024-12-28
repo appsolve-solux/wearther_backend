@@ -12,7 +12,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder @Getter @Setter
+@Builder
 @Table(name="taste")
 public class Taste {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,4 +25,7 @@ public class Taste {
 
     @OneToMany(mappedBy = "taste", fetch = LAZY)
     private List<TasteUpperWear> upperWears = new ArrayList<>();
+
+    @OneToMany(mappedBy = "taste", fetch = FetchType.LAZY)
+    private List<TasteLowerWear> lowerWears = new ArrayList<>();
 }
