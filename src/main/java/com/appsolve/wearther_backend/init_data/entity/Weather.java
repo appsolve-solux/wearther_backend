@@ -1,6 +1,7 @@
 package com.appsolve.wearther_backend.init_data.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,7 @@ public class Weather {
     @Column(name="weather_id")
     private long id;
 
-    @Column(name="weather_name")
+    @Column(name="weather_name", length = 100) @NotNull
     private String name;
 
     @Column(name = "weather_description")
@@ -30,7 +31,7 @@ public class Weather {
     @OneToMany(mappedBy = "weather", fetch = LAZY)
     private List<WeatherUpperWear> weatherUpperWearList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "weather", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "weather", fetch = LAZY)
     private List<WeatherLowerWear> lowerWears = new ArrayList<>();
 
     @OneToMany(mappedBy = "weather", fetch = LAZY)

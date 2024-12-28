@@ -19,7 +19,7 @@ public class OtherWear {
     @Column(name="other_wear_id")
     private Long id;
 
-    @Column(name = "other_wear_name") @NotNull
+    @Column(name = "other_wear_name", length = 100) @NotNull
     private String name;
 
     @OneToMany(mappedBy = "otherWear", fetch = LAZY)

@@ -22,10 +22,10 @@ public class LowerWear {
     @Column(name="lower_wear_id")
     private Long id;
 
-    @Column(name = "lower_wear_name") @NotNull
+    @Column(name = "lower_wear_name", length = 100) @NotNull
     private String name;
 
-    @Column(name="lower_close_type") @NotNull
+    @Column(name="lower_wear_type") @NotNull
     private int type;
 
     @OneToMany(mappedBy = "lowerWear", fetch = LAZY)
