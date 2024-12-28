@@ -45,9 +45,11 @@ public class TasteService {
 
     private void setUpperWear() {
         insertUpperInnerWearData();
-        insertUpperOuterWearData();
         matchTasteForUpperInnerWear();
+        insertUpperOuterWearData();
+        matchTasteForUpperOuterWear();
     }
+
 
     public void insertUpperInnerWearData() {
         List<String> upperInnerWearNames = Arrays.asList("민소매", "반소매", "맨투맨/후드티", "셔츠/블라우스", "니트",
@@ -76,17 +78,48 @@ public class TasteService {
     }
 
     private void matchTasteForUpperInnerWear() {
-        Map<Long, List<Long>> tasteToUpperWearMap = new HashMap<>();
-        tasteToUpperWearMap.put(1L, Arrays.asList(1L, 4L, 5L, 6L, 8L));
-        tasteToUpperWearMap.put(2L, Arrays.asList(1L, 4L, 5L, 7L, 8L));
-        tasteToUpperWearMap.put(3L, Arrays.asList(5L, 6L, 8L));
-        tasteToUpperWearMap.put(4L, Arrays.asList(1L, 2L, 4L, 5L, 8L));
-        tasteToUpperWearMap.put(5L, Arrays.asList(2L, 3L, 8L));
-        tasteToUpperWearMap.put(6L, Arrays.asList(2L, 3L, 4L, 7L, 8L));
-        tasteToUpperWearMap.put(7L, Arrays.asList(1L, 2L, 3L, 7L, 8L));
-        tasteToUpperWearMap.put(8L, Arrays.asList(3L, 6L, 8L));
+        Map<Long, List<Long>> tasteToUpperInnerWearMap = new HashMap<>();
+        tasteToUpperInnerWearMap.put(1L, Arrays.asList(1L, 4L, 5L, 6L, 8L));
+        tasteToUpperInnerWearMap.put(2L, Arrays.asList(1L, 4L, 5L, 7L, 8L));
+        tasteToUpperInnerWearMap.put(3L, Arrays.asList(5L, 6L, 8L));
+        tasteToUpperInnerWearMap.put(4L, Arrays.asList(1L, 2L, 4L, 5L, 8L));
+        tasteToUpperInnerWearMap.put(5L, Arrays.asList(2L, 3L, 8L));
+        tasteToUpperInnerWearMap.put(6L, Arrays.asList(2L, 3L, 4L, 7L, 8L));
+        tasteToUpperInnerWearMap.put(7L, Arrays.asList(1L, 2L, 3L, 7L, 8L));
+        tasteToUpperInnerWearMap.put(8L, Arrays.asList(3L, 6L, 8L));
 
-        for (Map.Entry<Long, List<Long>> entry : tasteToUpperWearMap.entrySet()) {
+        for (Map.Entry<Long, List<Long>> entry : tasteToUpperInnerWearMap.entrySet()) {
+            Long tasteId = entry.getKey();
+            List<Long> upperWearIds = entry.getValue();
+
+            Taste taste = tasteRepository.findById(tasteId)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid Taste ID: " + tasteId));
+
+            for (Long upperWearId : upperWearIds) {
+                UpperWear upperWear = upperWearRepository.findById(upperWearId)
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid UpperWear ID: " + upperWearId));
+
+                TasteUpperWear tasteUpperWear = TasteUpperWear.builder()
+                        .taste(taste)
+                        .upperWear(upperWear)
+                        .build();
+                tasteUpperWearRepository.save(tasteUpperWear);
+            }
+        }
+    }
+
+    private void matchTasteForUpperOuterWear() {
+        Map<Long, List<Long>> tasteToUpperOuterWearMap = new HashMap<>();
+        tasteToUpperOuterWearMap.put(1L, Arrays.asList(9L, 11L, 14L, 15L));
+        tasteToUpperOuterWearMap.put(2L, Arrays.asList(10L, 13L, 14L));
+        tasteToUpperOuterWearMap.put(3L, Arrays.asList(9L, 11L, 13L, 17L));
+        tasteToUpperOuterWearMap.put(4L, Arrays.asList(9L, 10L, 11L, 13L, 14L, 15L));
+        tasteToUpperOuterWearMap.put(5L, Arrays.asList(10L, 12L, 18L, 19L,  20L, 21L));
+        tasteToUpperOuterWearMap.put(6L, Arrays.asList(12L, 16L, 17L, 18L, 19L,  20L, 21L));
+        tasteToUpperOuterWearMap.put(7L, Arrays.asList(10L, 16L, 17L, 19L,  20L, 21L));
+        tasteToUpperOuterWearMap.put(8L, List.of(12L));
+
+        for (Map.Entry<Long, List<Long>> entry : tasteToUpperOuterWearMap.entrySet()) {
             Long tasteId = entry.getKey();
             List<Long> upperWearIds = entry.getValue();
 
