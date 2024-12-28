@@ -1,4 +1,4 @@
-package com.appsolve.wearther_backend.entity;
+package com.appsolve.wearther_backend.init_data.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,8 +7,6 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Getter
-@Setter
 @Table(name = "taste_upper_wear")
 public class TasteUpperWear {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

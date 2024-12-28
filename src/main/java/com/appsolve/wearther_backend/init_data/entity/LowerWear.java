@@ -1,4 +1,4 @@
-package com.appsolve.wearther_backend.entity;
+package com.appsolve.wearther_backend.init_data.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -18,17 +18,14 @@ import static jakarta.persistence.FetchType.*;
 @Builder
 @Table(name="lower_wear")
 public class LowerWear {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="lower_wear_id")
     private Long id;
 
-    @Column(name = "lower_wear_name")
-    @NotNull
+    @Column(name = "lower_wear_name") @NotNull
     private String name;
 
-    @Column(name="lower_close_type")
-    @NotNull
+    @Column(name="lower_close_type") @NotNull
     private int type;
 
     @OneToMany(mappedBy = "lowerWear", fetch = LAZY)

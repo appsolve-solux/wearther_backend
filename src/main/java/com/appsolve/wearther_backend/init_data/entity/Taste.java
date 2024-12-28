@@ -1,4 +1,4 @@
-package com.appsolve.wearther_backend.entity;
+package com.appsolve.wearther_backend.init_data.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -19,8 +19,7 @@ public class Taste {
     @Column(name="taste_id")
     private Long id;
 
-    @Column(name="taste_name", length=100)
-    @NotNull
+    @Column(name="taste_name", length=100) @NotNull
     private String name;
 
     @OneToMany(mappedBy = "taste", fetch = LAZY)
@@ -28,4 +27,7 @@ public class Taste {
 
     @OneToMany(mappedBy = "taste", fetch = FetchType.LAZY)
     private List<TasteLowerWear> lowerWears = new ArrayList<>();
+
+    @OneToMany(mappedBy = "taste", fetch = LAZY)
+    private List<TasteOtherWear> otherWears = new ArrayList<>();
 }

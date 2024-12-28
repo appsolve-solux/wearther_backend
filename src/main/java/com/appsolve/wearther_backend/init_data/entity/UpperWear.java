@@ -1,4 +1,4 @@
-package com.appsolve.wearther_backend.entity;
+package com.appsolve.wearther_backend.init_data.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -22,14 +22,15 @@ public class UpperWear {
     @Column(name = "upper_wear_id")
     private Long id;
 
-    @Column(name = "upper_wear_name")
-    @NotNull
+    @Column(name = "upper_wear_name") @NotNull
     private String name;
 
-    @Column(name="upper_close_type")
-    @NotNull
+    @Column(name="upper_close_type") @NotNull
     private int type;
 
     @OneToMany(mappedBy = "upperWear", fetch = LAZY)
     private List<TasteUpperWear> tastes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "upperWear", fetch = LAZY)
+    private List<WeatherUpperWear> weathers = new ArrayList<>();
 }

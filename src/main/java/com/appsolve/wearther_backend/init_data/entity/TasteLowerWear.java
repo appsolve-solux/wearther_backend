@@ -1,4 +1,4 @@
-package com.appsolve.wearther_backend.entity;
+package com.appsolve.wearther_backend.init_data.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,8 +9,7 @@ import lombok.*;
 @Builder
 @Table(name = "taste_lower_wear")
 public class TasteLowerWear {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "taste_lower_wear_id")
     private Long id;
 
