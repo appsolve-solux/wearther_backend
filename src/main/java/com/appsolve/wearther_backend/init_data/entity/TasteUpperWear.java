@@ -6,7 +6,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
+@Builder @Getter
 @Table(name = "taste_upper_wear")
 public class TasteUpperWear {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

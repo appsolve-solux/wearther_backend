@@ -2,10 +2,7 @@ package com.appsolve.wearther_backend.init_data.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +12,7 @@ import static jakarta.persistence.FetchType.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
+@Builder @Getter
 @Table(name="lower_wear")
 public class LowerWear {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
