@@ -24,4 +24,7 @@ public class OtherWear {
 
     @OneToMany(mappedBy = "otherWear", fetch = LAZY)
     private List<TasteOtherWear> tasteOtherWears = new ArrayList<>();
+
+    @OneToMany(mappedBy = "otherWear", fetch = LAZY)
+    private List<WeatherOtherWear> weathers = new ArrayList<>();
 }
