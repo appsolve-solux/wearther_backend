@@ -8,10 +8,12 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jakarta.persistence.FetchType.*;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
+@Builder @Getter
 @Table(name="closet")
 public class Closet {
     @Id
@@ -22,12 +24,12 @@ public class Closet {
     @OneToOne @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "closet", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "closet", fetch = EAGER, cascade = CascadeType.ALL)
     private List<ClosetUpper> closetUppers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "closet", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "closet", fetch = EAGER, cascade = CascadeType.ALL)
     private List<ClosetLower> closetLowers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "closet", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "closet", fetch = EAGER, cascade = CascadeType.ALL)
     private List<ClosetOther> closetOthers = new ArrayList<>();
 }
