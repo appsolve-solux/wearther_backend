@@ -4,10 +4,7 @@ import lombok.Data;
 
 @Data
 public class LocationPostRequestDto {
-    private Long locationId;
-    private Long userNumber;
+    private Long userId;
     private String locationInfo;
     private Integer locationIndex;
-
-
 }
