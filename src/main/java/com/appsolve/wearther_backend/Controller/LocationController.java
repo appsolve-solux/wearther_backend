@@ -5,8 +5,6 @@ import com.appsolve.wearther_backend.Dto.LocationPostRequestDto;
 import com.appsolve.wearther_backend.Entity.LocationEntity;
 import com.appsolve.wearther_backend.Service.LocationService;
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
-import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
-import com.appsolve.wearther_backend.apiResponse.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
