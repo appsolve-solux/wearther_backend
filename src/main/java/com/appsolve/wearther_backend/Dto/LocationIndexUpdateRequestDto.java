@@ -1,10 +1,10 @@
-package com.appsolve.wearther_backend.Location.Dto;
+package com.appsolve.wearther_backend.Dto;
 
 import lombok.Data;
 
 @Data
 public class LocationIndexUpdateRequestDto {
-    private Long userId;
+    private Long memberId;
     private int beforeLocationIndex;
     private int afterLocationIndex;
 }
