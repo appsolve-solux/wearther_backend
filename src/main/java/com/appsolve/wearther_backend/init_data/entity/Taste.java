@@ -12,7 +12,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
+@Builder @Getter
 @Table(name="taste")
 public class Taste {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
