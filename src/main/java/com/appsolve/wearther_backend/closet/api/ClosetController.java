@@ -61,7 +61,7 @@ public class ClosetController {
             others.addAll(recommendedClothes.getOthers());
         }
         ClosetResponseDto result = new ClosetResponseDto(new ArrayList<>(uppers), new ArrayList<>(lowers), new ArrayList<>(others));
-        return ResponseEntity.ok(result);
+        return ApiResponse.success(HttpStatus.OK, result);
     }
 
 }
