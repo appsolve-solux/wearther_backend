@@ -1,6 +1,6 @@
 package com.appsolve.wearther_backend.closet.api;
 
-import com.appsolve.wearther_backend.Entity.MemberEntity;
+import com.appsolve.wearther_backend.Entity.Member;
 import com.appsolve.wearther_backend.Service.TasteService;
 import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
@@ -39,7 +39,7 @@ public class ClosetController {
     @GetMapping("/clothes/{memberId}")
     public ResponseEntity<?> getMemberCloset(@PathVariable("memberId") Long memberId) {
         // TODO : 인증 객체로부터 멤버를 가져옴
-        MemberEntity member = memberService.getMemberById(memberId);
+        Member member = memberService.getMemberById(memberId);
         ClosetResponseDto closetResponseDto = closetService.getOwnedClothes(memberId);
         return ApiResponse.success(HttpStatus.OK, closetResponseDto);
     }
@@ -47,7 +47,7 @@ public class ClosetController {
     @GetMapping("/recommend/{memberId}")
     public ResponseEntity<?> getRecommendedCloset(@PathVariable("memberId") Long memberId) {
         // TODO : 인증 객체로부터 멤버를 가져옴
-        MemberEntity member = memberService.getMemberById(memberId);
+        Member member = memberService.getMemberById(memberId);
         List<Long> tasteIds = memberService.getMemberTastes(memberId);
 
         Set<Long> uppers = new HashSet<>();

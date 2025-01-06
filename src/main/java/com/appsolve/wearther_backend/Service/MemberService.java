@@ -1,6 +1,6 @@
 package com.appsolve.wearther_backend.Service;
 
-import com.appsolve.wearther_backend.Entity.MemberEntity;
+import com.appsolve.wearther_backend.Entity.Member;
 import com.appsolve.wearther_backend.Repository.MemberRepository;
 import com.appsolve.wearther_backend.Repository.MemberTasteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class MemberService {
         memberRepository.updateConstitutionByMemberId(memberId, constitution);
     }
 
-    public MemberEntity getMemberById(Long memberId) {
+    public Member getMemberById(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberId));
     }

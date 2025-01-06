@@ -1,7 +1,7 @@
 package com.appsolve.wearther_backend.closet.entity;
 
 
-import com.appsolve.wearther_backend.Entity.MemberEntity;
+import com.appsolve.wearther_backend.Entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,7 +22,7 @@ public class Closet {
     private Long id;
 
     @OneToOne @JoinColumn(name = "member_id")
-    private MemberEntity member;
+    private Member member;
 
     @OneToMany(mappedBy = "closet", fetch = EAGER, cascade = CascadeType.ALL)
     private List<ClosetUpper> closetUppers = new ArrayList<>();
