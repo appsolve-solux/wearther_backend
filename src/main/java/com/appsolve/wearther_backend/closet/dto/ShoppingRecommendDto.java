@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BuyRecommendDto {
+public class ShoppingRecommendDto {
     private String category;
     private String productName;
     private String productUrl;
