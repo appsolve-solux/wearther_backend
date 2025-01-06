@@ -24,13 +24,10 @@ public class MemberEntity {
     private String userPw;
     private Integer constitution;
 
-    @Builder.Default
     @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "closet_id")
     private Closet closet;
 
-    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MemberTaste> memberTastes = new ArrayList<>(); 
-
+    private List<MemberTaste> memberTastes = new ArrayList<>();
 }
