@@ -1,15 +1,15 @@
 package com.appsolve.wearther_backend.Entity;
 
-
 import com.appsolve.wearther_backend.init_data.entity.Taste;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
-@Data
 @Entity
-@Table(name = "member-taste")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder @Getter
+@Table(name="member_taste")
 public class MemberTaste {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,5 +21,4 @@ public class MemberTaste {
     @ManyToOne
     @JoinColumn(name = "taste_id", nullable = false)
     private Taste taste;
-
 }
