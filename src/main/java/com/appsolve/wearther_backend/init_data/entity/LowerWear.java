@@ -1,5 +1,6 @@
 package com.appsolve.wearther_backend.init_data.entity;
 
+import com.appsolve.wearther_backend.closet.entity.ClosetLower;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -28,6 +29,9 @@ public class LowerWear {
     @OneToMany(mappedBy = "lowerWear", fetch = LAZY)
     private List<TasteLowerWear> tasteLowerWears = new ArrayList<>();
 
-    @OneToMany(mappedBy = "lowerWear", fetch = LAZY)
+    @OneToMany(mappedBy ="lowerWear", fetch = LAZY)
     private List<WeatherLowerWear> weathers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "lowerWear", fetch = LAZY)
+    private List<ClosetLower> closets = new ArrayList<>();
 }
