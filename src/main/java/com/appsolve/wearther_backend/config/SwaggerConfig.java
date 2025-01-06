@@ -25,7 +25,6 @@ public class SwaggerConfig {
         SecurityRequirement securityRequirement = new SecurityRequirement()
                 .addList(SECURITY_SCHEME_NAME); // SecurityScheme 이름 추가
 
-
         Info info = new Info()
                 .title(API_NAME)
                 .version(API_VERSION)

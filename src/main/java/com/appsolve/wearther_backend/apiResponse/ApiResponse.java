@@ -12,6 +12,18 @@ public record ApiResponse<T> (
                              @Nullable T result,
                              @Nullable ExceptionDto error) {
 
+    public static <T> ResponseEntity<ApiResponse<T>> noContentSuccess() {
+        ApiResponse<T> response = new ApiResponse<>(HttpStatus.NO_CONTENT, true, null, null);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    }
+
+    public static <T> ResponseEntity<ApiResponse<T>> loginSuccess(T result, String jwtToken) {
+        ApiResponse<T> response = new ApiResponse<>(HttpStatus.OK, true, result, null);
+        return ResponseEntity.ok()
+                .header("Authorization", "Bearer " + jwtToken) // 헤더에 토큰 추가
+                .body(response);
+    }
+
     public static <T> ResponseEntity<ApiResponse<T>> success(HttpStatus httpStatus, @Nullable final T result) {
         ApiResponse<T> response = new ApiResponse<>(httpStatus, true, result, null);
         return new ResponseEntity<>(response, httpStatus);

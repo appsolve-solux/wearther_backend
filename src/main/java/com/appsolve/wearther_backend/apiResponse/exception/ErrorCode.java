@@ -20,7 +20,10 @@ public enum ErrorCode {
 
     /*에러 추가 가능*/
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4001", "존재하지 않는 사용자 ID입니다."),
-    USER_NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "USER4002", "사용자 인증이 필요합니다.");
+    USER_NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "USER4002", "사용자 인증이 필요합니다."),
+    NOT_FOUND_AUTHORIZATION(HttpStatus.UNAUTHORIZED, "USER4003","Authorization 오류가 있습니다"),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED,"USER4004" ,"유효하지 않은 jwt 토큰입니다." ),
+    INVALID_SIGNATURE(HttpStatus.UNAUTHORIZED, "USER4005" ,"" );
 
     private final HttpStatus httpStatus;
     private final String code;
