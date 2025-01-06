@@ -24,12 +24,15 @@ public class Closet {
     @OneToOne @JoinColumn(name = "member_id")
     private MemberEntity member;
 
+    @Builder.Default
     @OneToMany(mappedBy = "closet", fetch = EAGER, cascade = CascadeType.ALL)
     private List<ClosetUpper> closetUppers = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "closet", fetch = EAGER, cascade = CascadeType.ALL)
     private List<ClosetLower> closetLowers = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "closet", fetch = EAGER, cascade = CascadeType.ALL)
     private List<ClosetOther> closetOthers = new ArrayList<>();
 }

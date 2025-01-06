@@ -23,12 +23,15 @@ public class OtherWear {
     @Column(name = "other_wear_name", length = 100) @NotNull
     private String name;
 
+    @Builder.Default
     @OneToMany(mappedBy = "otherWear", fetch = LAZY)
     private List<TasteOtherWear> tasteOtherWears = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy ="otherWear", fetch = LAZY)
     private List<WeatherOtherWear> weathers = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "otherWear", fetch = LAZY)
     private List<ClosetOther> closets = new ArrayList<>();
 }
