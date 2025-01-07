@@ -32,6 +32,12 @@ public class MemberController {
         return ApiResponse.success(HttpStatus.OK, memberId);
     }
 
+    @PatchMapping("/password/update/{memberId}/{newPassword}")
+    public ResponseEntity<ApiResponse<String>> updateMemberPassword(@PathVariable Long memberId, @PathVariable String newPassword){
+        memberService.updatePasswordById(memberId, newPassword);
+        return ApiResponse.success(HttpStatus.OK, newPassword);
+    }
+
 
 
 }
