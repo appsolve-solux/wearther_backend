@@ -25,4 +25,13 @@ public class MemberController {
         memberService.updateConstitutionByMemberId(memberId, constitution);
         return ApiResponse.success(HttpStatus.OK, constitution);
     }
+
+    @DeleteMapping("/delete/{memberId}")
+    public ResponseEntity<ApiResponse<Long>> deleteMember(@PathVariable Long memberId){
+        memberService.deleteMember(memberId);
+        return ApiResponse.success(HttpStatus.OK, memberId);
+    }
+
+
+
 }
