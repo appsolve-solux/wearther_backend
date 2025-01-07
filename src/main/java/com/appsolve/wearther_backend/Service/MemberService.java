@@ -49,4 +49,8 @@ public class MemberService {
             throw new CustomException(ErrorCode._BAD_REQUEST);
         }
     }
+
+    public void updatePasswordById(Long memberId, String newPassword){
+        memberRepository.updateUserPwByMemberId(memberId, newPassword);
+    }
 }
