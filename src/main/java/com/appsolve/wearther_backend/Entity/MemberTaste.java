@@ -16,7 +16,7 @@ public class MemberTaste {
 
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    private MemberEntity member;
 
     @ManyToOne
     @JoinColumn(name = "taste_id", nullable = false)

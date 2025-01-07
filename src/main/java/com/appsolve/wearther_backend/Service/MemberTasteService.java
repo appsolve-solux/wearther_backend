@@ -1,6 +1,6 @@
 package com.appsolve.wearther_backend.Service;
 
-import com.appsolve.wearther_backend.Entity.Member;
+import com.appsolve.wearther_backend.Entity.MemberEntity;
 import com.appsolve.wearther_backend.Entity.MemberTaste;
 import com.appsolve.wearther_backend.Repository.MemberTasteRepository;
 import com.appsolve.wearther_backend.init_data.entity.Taste;
@@ -26,7 +26,7 @@ public class MemberTasteService {
 
         // 2. 새로운 데이터 추가
         for (Long tasteId : newTasteIds) {
-            Member member = Member.builder()
+            MemberEntity member = MemberEntity.builder()
                     .memberId(memberId)
                     .build();
 
