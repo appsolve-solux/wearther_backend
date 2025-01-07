@@ -3,6 +3,8 @@ package com.appsolve.wearther_backend.Service;
 import com.appsolve.wearther_backend.Entity.MemberEntity;
 import com.appsolve.wearther_backend.Repository.MemberRepository;
 import com.appsolve.wearther_backend.Repository.MemberTasteRepository;
+import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
+import com.appsolve.wearther_backend.apiResponse.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +32,7 @@ public class MemberService {
 
     public MemberEntity getMemberById(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberId));
+                .orElseThrow(() -> new CustomException(ErrorCode._BAD_REQUEST));
     }
 
     public List<Long> getMemberTastes(Long memberId) {
@@ -38,5 +40,13 @@ public class MemberService {
                 .stream()
                 .map(memberTaste -> memberTaste.getTaste().getId())
                 .collect(Collectors.toList());
+    }
+
+    public void deleteMember(Long memberId){
+        if (memberRepository.existsById(memberId)){
+            memberRepository.deleteById(memberId);
+        } else {
+            throw new CustomException(ErrorCode._BAD_REQUEST);
+        }
     }
 }
