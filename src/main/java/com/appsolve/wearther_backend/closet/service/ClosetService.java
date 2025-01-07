@@ -111,50 +111,34 @@ public class ClosetService {
 
 
     public void updateUserCloset(Long memberId, List<Long> newUppers, List<Long> newLowers, List<Long> newOthers) {
-        // 기존 옷장 조회
         Closet closet = closetRepository.findClosetById(memberId)
                 .orElseThrow(() -> new RuntimeException("Closet not found"));
 
-        // 기존 옷 데이터를 삭제하고 새로운 목록으로 업데이트 (clear()로 기존 목록 비우기)
-        closet.getClosetUppers().clear(); // 기존 UpperWear 삭제
-        closet.getClosetLowers().clear(); // 기존 LowerWear 삭제
-        closet.getClosetOthers().clear(); // 기존 OtherWear 삭제
+        closet.getClosetUppers().clear();
+        closet.getClosetLowers().clear();
+        closet.getClosetOthers().clear();
 
-        // 새로운 옷을 추가
         addNewClothes(closet, newUppers, newLowers, newOthers);
 
-        // 업데이트된 옷장을 저장
         closetRepository.save(closet);
     }
 
 
     private void addNewClothes(Closet closet, List<Long> newUppers, List<Long> newLowers, List<Long> newOthers) {
-        // 새로운 UpperWear 추가
         for (Long upperId : newUppers) {
-            ClosetUpper closetUpper = new ClosetUpper(null, closet, findUpperWearById(upperId));
-            closet.getClosetUppers().add(closetUpper); // 새 UpperWear 추가
+            closet.getClosetUppers().add(new ClosetUpper(null, closet, findUpperWearById(upperId)));
         }
 
-        // 새로운 LowerWear 추가
         for (Long lowerId : newLowers) {
-            // 중복되지 않도록 확인
-            if (closetLowerRepository.findByClosetIdAndLowerWearId(closet.getId(), lowerId).isEmpty()) {
-                ClosetLower closetLower = new ClosetLower(null, closet, findLowerWearById(lowerId));
-                closet.getClosetLowers().add(closetLower); // 새 LowerWear 추가
-            }
+            closet.getClosetLowers().add(new ClosetLower(null, closet, findLowerWearById(lowerId)));
         }
 
-        // 새로운 OtherWear 추가
         for (Long otherId : newOthers) {
-            // 중복되지 않도록 확인
-            if (closetOtherRepository.findByClosetIdAndOtherWearId(closet.getId(), otherId).isEmpty()) {
-                ClosetOther closetOther = new ClosetOther(null, closet, findOtherWearById(otherId));
-                closet.getClosetOthers().add(closetOther); // 새 OtherWear 추가
-            }
+            closet.getClosetOthers().add(new ClosetOther(null, closet, findOtherWearById(otherId)));
         }
     }
 
-    // 각 의류 ID로 의류 엔티티를 찾는 메서드 수정
+
     private UpperWear findUpperWearById(Long upperId) {
         return upperWearRepository.findById(upperId)
                 .orElseThrow(() -> new RuntimeException("Upper Wear not found"));
