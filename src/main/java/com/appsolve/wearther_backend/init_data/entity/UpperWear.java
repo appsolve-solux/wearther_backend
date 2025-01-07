@@ -26,12 +26,15 @@ public class UpperWear {
     @Column(name="upper_wear_type") @NotNull
     private int type;
 
+    @Builder.Default
     @OneToMany(mappedBy = "upperWear", fetch = LAZY)
     private List<TasteUpperWear> tastes = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "upperWear", fetch = LAZY)
     private List<WeatherUpperWear> weathers = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "upperWear", fetch = LAZY)
     private List<ClosetUpper> closets = new ArrayList<>();
 }
