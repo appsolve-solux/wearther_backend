@@ -12,7 +12,7 @@ services:
       - "5432:5432"
 
   app:
-    image: ${DOCKER_IMAGE}
+    image: ${DOCKERHUB_USERNAME}/${DOCKERHUB_REPOSITORY}:${GITHUB_SHA}  # 실제 Docker 이미지 이름과 태그로 설정
     container_name: spring-boot-app
     environment:
       - TZ=Asia/Seoul
