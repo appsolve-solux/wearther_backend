@@ -3,8 +3,6 @@ name: Java CI with Gradle
 on:
   push:
     branches: [ "main" ]
-#  pull_request:
-#    branches: [ "main" ]
 
 jobs:
   build:
@@ -78,16 +76,23 @@ jobs:
             echo "Starting deployment..."
             cd ~/wearther_backend
             echo "Pulling latest changes from main branch..."
-            git pull origin main
+            git fetch --all
+            git reset --hard origin/main
             echo "Pulling latest Docker image..."
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${{ github.sha }}
+            
             echo "Setting environment variables..."
-            echo "POSTGRES_DB=${{ secrets.DB_NAME }}" > .env
-            echo "POSTGRES_USER=${{ secrets.DB_USERNAME }}" >> .env
-            echo "POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-            echo "DOCKER_IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${{ github.sha }}" >> .env
+            cat > .env <<EOL
+POSTGRES_DB=${{ secrets.DB_NAME }}
+POSTGRES_USER=${{ secrets.DB_USERNAME }}
+POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}
+DOCKER_IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${{ github.sha }}
+EOL
+
             echo "Starting Docker containers with docker-compose..."
+            docker-compose --env-file .env down
             docker-compose --env-file .env up -d
+            
             echo "Checking Docker containers..."
             docker-compose ps
             echo "Deployment completed successfully!"
