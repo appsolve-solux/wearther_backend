@@ -83,9 +83,9 @@ jobs:
             
             echo "Setting environment variables..."
             cat > .env <<EOL 
-            POSTGRES_DB=${{ secrets.DB_NAME }}
-            POSTGRES_USER=${{ secrets.DB_USERNAME }}
-            POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_USERNAME=${{ secrets.DB_USERNAME }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             DOCKER_IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${{ github.sha }}
             EOL
             echo "Starting Docker containers with docker-compose..."
