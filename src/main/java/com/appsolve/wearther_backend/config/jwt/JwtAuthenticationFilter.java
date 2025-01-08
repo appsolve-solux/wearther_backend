@@ -3,7 +3,7 @@ package com.appsolve.wearther_backend.config.jwt;
 import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
 import com.appsolve.wearther_backend.apiResponse.exception.ErrorCode;
 import com.appsolve.wearther_backend.config.auth.PrincipalDetails;
-import com.appsolve.wearther_backend.domain.Member;
+import com.appsolve.wearther_backend.Domain.Member;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,7 +16,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.util.Date;
 
 //인증 필터이다..!
 //스프링 시큐리티의 필터

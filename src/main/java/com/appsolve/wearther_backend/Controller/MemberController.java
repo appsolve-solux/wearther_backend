@@ -1,9 +1,9 @@
 package com.appsolve.wearther_backend.Controller;
 
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
-import com.appsolve.wearther_backend.dto.SignInRequest;
-import com.appsolve.wearther_backend.dto.SignUpRequest;
-import com.appsolve.wearther_backend.service.MemberService;
+import com.appsolve.wearther_backend.Dto.SignInRequest;
+import com.appsolve.wearther_backend.Dto.SignUpRequest;
+import com.appsolve.wearther_backend.Service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

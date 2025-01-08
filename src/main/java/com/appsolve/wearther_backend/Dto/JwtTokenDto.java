@@ -1,4 +1,4 @@
-package com.appsolve.wearther_backend.dto;
+package com.appsolve.wearther_backend.Dto;
 
 public class JwtTokenDto {
     //jwt 인증타입 액세스 토큰 요청시 사용되는 인증 유형이다!

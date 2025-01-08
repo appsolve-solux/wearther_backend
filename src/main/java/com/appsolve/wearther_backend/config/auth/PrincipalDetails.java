@@ -1,6 +1,6 @@
 package com.appsolve.wearther_backend.config.auth;
 
-import com.appsolve.wearther_backend.domain.Member;
+import com.appsolve.wearther_backend.Domain.Member;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

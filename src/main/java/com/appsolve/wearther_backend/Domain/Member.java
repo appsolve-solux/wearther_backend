@@ -1,4 +1,4 @@
-package com.appsolve.wearther_backend.domain;
+package com.appsolve.wearther_backend.Domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

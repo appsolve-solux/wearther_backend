@@ -1,12 +1,12 @@
-package com.appsolve.wearther_backend.service;
+package com.appsolve.wearther_backend.Service;
 
 
 import com.appsolve.wearther_backend.config.auth.PrincipalDetails;
 import com.appsolve.wearther_backend.config.jwt.JwtProvider;
-import com.appsolve.wearther_backend.domain.Member;
-import com.appsolve.wearther_backend.dto.SignInRequest;
-import com.appsolve.wearther_backend.dto.SignUpRequest;
-import com.appsolve.wearther_backend.repository.MemberRepository;
+import com.appsolve.wearther_backend.Domain.Member;
+import com.appsolve.wearther_backend.Dto.SignInRequest;
+import com.appsolve.wearther_backend.Dto.SignUpRequest;
+import com.appsolve.wearther_backend.Repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -1,4 +1,4 @@
-package com.appsolve.wearther_backend.dto;
+package com.appsolve.wearther_backend.Dto;
 
 import jakarta.validation.constraints.Email;
 import lombok.Builder;

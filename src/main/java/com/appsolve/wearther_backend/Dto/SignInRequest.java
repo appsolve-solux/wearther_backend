@@ -1,4 +1,4 @@
-package com.appsolve.wearther_backend.dto;
+package com.appsolve.wearther_backend.Dto;
 
 import lombok.Data;
 

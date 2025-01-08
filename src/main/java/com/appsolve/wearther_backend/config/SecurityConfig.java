@@ -2,7 +2,7 @@ package com.appsolve.wearther_backend.config;
 
 import com.appsolve.wearther_backend.config.jwt.JwtAuthorizationFilter;
 import com.appsolve.wearther_backend.config.jwt.JwtProvider;
-import com.appsolve.wearther_backend.repository.MemberRepository;
+import com.appsolve.wearther_backend.Repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

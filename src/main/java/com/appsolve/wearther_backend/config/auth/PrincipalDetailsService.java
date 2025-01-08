@@ -1,7 +1,7 @@
 package com.appsolve.wearther_backend.config.auth;
 
-import com.appsolve.wearther_backend.domain.Member;
-import com.appsolve.wearther_backend.repository.MemberRepository;
+import com.appsolve.wearther_backend.Domain.Member;
+import com.appsolve.wearther_backend.Repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
