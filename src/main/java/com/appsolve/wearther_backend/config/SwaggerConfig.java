@@ -21,9 +21,8 @@ public class SwaggerConfig {
                 .scheme("bearer") // Bearer 인증 방식
                 .bearerFormat("JWT"); // JWT 토큰 포맷 명시
 
-        // SecurityRequirement 설정
         SecurityRequirement securityRequirement = new SecurityRequirement()
-                .addList(SECURITY_SCHEME_NAME); // SecurityScheme 이름 추가
+                .addList(SECURITY_SCHEME_NAME);
 
         Info info = new Info()
                 .title(API_NAME)
@@ -31,8 +30,8 @@ public class SwaggerConfig {
                 .description(API_DESCRIPTION);
 
         return new OpenAPI()
-                .addSecurityItem(securityRequirement) // 보안 요구사항 추가
+                .addSecurityItem(securityRequirement)
                 .components(new io.swagger.v3.oas.models.Components()
-                        .addSecuritySchemes(SECURITY_SCHEME_NAME, securityScheme)) // SecuritySchemes 추가
+                        .addSecuritySchemes(SECURITY_SCHEME_NAME, securityScheme))
                 .info(info);    }
 }

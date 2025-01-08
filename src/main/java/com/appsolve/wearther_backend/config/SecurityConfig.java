@@ -1,6 +1,5 @@
 package com.appsolve.wearther_backend.config;
 
-import com.appsolve.wearther_backend.config.jwt.JwtAuthenticationFilter;
 import com.appsolve.wearther_backend.config.jwt.JwtAuthorizationFilter;
 import com.appsolve.wearther_backend.config.jwt.JwtProvider;
 import com.appsolve.wearther_backend.repository.MemberRepository;

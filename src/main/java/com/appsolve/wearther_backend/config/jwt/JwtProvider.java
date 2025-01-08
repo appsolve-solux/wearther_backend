@@ -12,12 +12,20 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
     @Value("${jwt.secret}")
     private String secret;
+    @Value("${jwt.expiration.access}")
+    private long accessExpiration;
+    @Value("${jwt.expiration.refresh}")
+    private long refreshExpiration;
+
     private  SecretKey key;
 
     @PostConstruct
@@ -26,29 +34,33 @@ public class JwtProvider {
         key = Keys.hmacShaKeyFor(decodedKey);
     }
 
-    public String createRefreshToken(String loginId, long expirationTimeMs) {
-        return Jwts.builder()
-                .setSubject(loginId) // 사용자 식별자
-                .setIssuer("Appsolve") // 발급자
-                .setIssuedAt(new Date()) // 발급 시간
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTimeMs)) // 만료 시간
-                .signWith(key, SignatureAlgorithm.HS256) // 서명
+
+    public String createRefreshToken(final String id) {
+        HashMap<String, Object> map = new HashMap<>();
+        String refreshToken = createToken(map, id, refreshExpiration);
+        return refreshToken;
+    }
+
+    public String createAccessToken(final String id) {
+        HashMap<String, Object> map = new HashMap<>();
+        return createToken(map, id, accessExpiration);
+    }
+
+    public String createToken(
+            Map<String, Object> claims,
+                            final  String id,
+                              long expiration
+    ) {
+        return  Jwts
+                .builder()
+                .setClaims(claims)
+                .setSubject(id)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis()+expiration))
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-
-    public String createAccessToken(String loginId, Long userId) {
-        return Jwts.builder()
-                .setSubject(loginId) // 사용자 ID
-                .claim("LoginId", loginId)
-                .claim("UserId", userId)
-                .setIssuer("Appsolve") // 발급자
-                .setAudience("Member") // 수신자
-                .setIssuedAt(new Date()) // 발급 시간
-                .setExpiration(new Date(System.currentTimeMillis() + 100L *60 * 60 * 10000)) // 만료 시간
-                .signWith(key, SignatureAlgorithm.HS256) // 서명
-                .compact();
-    }
 
     public void validateToken(final String token) {
         try {
@@ -60,14 +72,13 @@ public class JwtProvider {
             throw new CustomException(ErrorCode.INVALID_SIGNATURE);
         } catch (MalformedJwtException e) {
             throw new CustomException(ErrorCode.INVALID_TOKEN);
+        } catch (ExpiredJwtException e) {
+            throw new CustomException(ErrorCode.TOKEN_EXPIRED);
+        } catch (UnsupportedJwtException e) {
+            throw new CustomException(ErrorCode.UNSUPPORTED_TOKEN);
+        } catch (IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.EMPTY_CLAIMS);
         }
-//        } catch (ExpiredJwtException e) {
-//            throw new CustomException(ErrorCode.TOKEN_EXPIRED, "JWT token is expired");
-//        } catch (UnsupportedJwtException e) {
-//            throw new CustomException(ErrorCode.UNSUPPORTED_TOKEN, "JWT token is unsupported");
-//        } catch (IllegalArgumentException e) {
-//            throw new CustomException(ErrorCode.EMPTY_CLAIMS, "JWT claims string is empty");
-//        }
 
     }
 
@@ -79,26 +90,29 @@ public class JwtProvider {
         System.out.println("여기 실행됏어염1");
         return header.replace("Bearer ", "");
     }
-    //서브젝트 꺼내기-> 현재 설정은 로그인아이디 입니다
+    public Long getUserIdFromToken(final String token) {
+        String subject = getSubjectFromToken(token);
+        return Long.parseLong(subject);
+    }
+
     public String getSubjectFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key) // Secret Key 사용
-                .build()
-                .parseClaimsJws(token) // 토큰 검증
-                .getBody()
-                .getSubject(); // Subject 꺼내기
+        return getUserAllClaimFromToken(token).getSubject();
     }
 
 
-    public String getUserClaimFromToken(final String token, String claim) {
+    public <T> T getUserClaimFromToken(final String token,String claim , Class<T> clazz) {
+     Claims claims = getUserAllClaimFromToken(token);
+     return  claims.get(claim,clazz);
+    }
+
+    public Claims getUserAllClaimFromToken(final String token) {
         validateToken(token);
-        System.out.println("여기 실행 됏어염2");
-        return Jwts.parserBuilder()
-                .setSigningKey(key) // Secret Key 사용
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .get(claim, String.class);
+                .getBody();
+        return claims;
     }
 
 

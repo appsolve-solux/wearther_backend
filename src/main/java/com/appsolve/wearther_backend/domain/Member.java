@@ -12,8 +12,9 @@ import lombok.*;
 @Entity
 public class Member {
     @Id
+    @Column(name = "member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long member_id;
+    private Long memberId;
 
     @NotNull
     @Column(name = "login_id", unique = true)

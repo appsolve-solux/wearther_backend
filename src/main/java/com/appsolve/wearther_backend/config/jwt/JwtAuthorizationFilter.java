@@ -31,30 +31,23 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     //인증이나 권한이 필요한 주소요청이 있을 때 해당 필터를 타게 된다.
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        try {
-        String accessToken = jwtProvider.extractJwtFromHeader(request);
-        if (accessToken == null) {
-            throw new CustomException(ErrorCode.INVALID_TOKEN);
-        }
-        String userName = jwtProvider.getUserClaimFromToken(accessToken, "LoginId");
-        if (userName != null) {
-            Member member = memberRepository.findByLoginId(userName);
-            PrincipalDetails principalDetails = new PrincipalDetails(member);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    principalDetails,
-                    null,
-                    principalDetails.getAuthorities()
-            );
-            System.out.println("여기까진 되나?" + authentication.getName());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println("필터 체인 이후에도 실행됨");
-        }}
-        catch (Exception e) {
-            logger.info("Failed to authorize/authenticate with JWT due to " + e.getMessage());
+        String token = jwtProvider.extractJwtFromHeader(request);
+        if (token != null) {
+            Long userId = jwtProvider.getUserIdFromToken(token);
+            if (userId != null) {
+                Member member = memberRepository.findByMemberId(userId);
+                PrincipalDetails principalDetails = new PrincipalDetails(member);
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        principalDetails,
+                        null,
+                        principalDetails.getAuthorities()
+                );
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+            chain.doFilter(request, response);
         }
         chain.doFilter(request, response);
-    }
-}
+    }}
 
 
 

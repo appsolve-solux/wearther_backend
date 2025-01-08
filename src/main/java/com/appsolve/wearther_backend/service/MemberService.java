@@ -25,7 +25,6 @@ public class MemberService {
 
 
     public void registerMember(SignUpRequest request) {
-        //건너뛰기 -> 들어오지 않더라도 생성이 되어야함.
         Member member = Member.builder()
                 .login_id(request.getLoginId())
                 .member_pw(passwordEncoder.encode(request.getPassword()))
@@ -33,7 +32,6 @@ public class MemberService {
                 .member_email(request.getEmail())
                 .constitution(request.getConstitution())
                 .build();
-        //필수적인 정보 먼저 저장
         memberRepository.save(member);
     }
 
@@ -41,9 +39,10 @@ public class MemberService {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(request.getLoginId(), request.getPassword());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        Long memberId = principalDetails.getMember().getMemberId();
         String jwtToken = jwtProvider.createAccessToken(
-                authentication.getName(),
-                ((PrincipalDetails) authentication.getPrincipal()).getMember().getMember_id()
+                String.valueOf(memberId)
         );
         return jwtToken;
     }
