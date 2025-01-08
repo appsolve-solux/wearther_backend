@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "location")
-public class LocationEntity {
+public class Location {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long locationId;  // Primary key: location_id

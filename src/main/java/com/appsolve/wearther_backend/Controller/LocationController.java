@@ -2,7 +2,7 @@ package com.appsolve.wearther_backend.Controller;
 
 import com.appsolve.wearther_backend.Dto.LocationIndexUpdateRequestDto;
 import com.appsolve.wearther_backend.Dto.LocationPostRequestDto;
-import com.appsolve.wearther_backend.Entity.LocationEntity;
+import com.appsolve.wearther_backend.Entity.Location;
 import com.appsolve.wearther_backend.Service.LocationService;
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +18,9 @@ public class LocationController {
     private LocationService locationService;
 
     @PostMapping("/post")
-    public ResponseEntity<ApiResponse<LocationEntity>> addLocation(@RequestBody LocationPostRequestDto locationRequest) {
-        LocationEntity locationEntity = locationService.addLocation(locationRequest);
-        return ApiResponse.success(HttpStatus.CREATED, locationEntity);
+    public ResponseEntity<ApiResponse<Location>> addLocation(@RequestBody LocationPostRequestDto locationRequest) {
+        Location location = locationService.addLocation(locationRequest);
+        return ApiResponse.success(HttpStatus.CREATED, location);
     }
 
     @DeleteMapping("/delete/{memberId}/{locationIndex}")
