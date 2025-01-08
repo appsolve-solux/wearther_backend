@@ -3,11 +3,14 @@ package com.appsolve.wearther_backend.init_data;
 import com.appsolve.wearther_backend.init_data.entity.*;
 import com.appsolve.wearther_backend.init_data.repository.*;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+@Slf4j
 @Service
 public class InitService {
 
@@ -23,22 +26,49 @@ public class InitService {
     @Autowired private TasteOtherWearRepository tasteOtherWearRepository;
     @Autowired private WeatherOtherWearRepository weatherOtherWearRepository;
 
+    @Transactional
     @PostConstruct
     public void init() {
-        if (weatherRepository.count() == 0) {
-            setWeather();
-        }
-        if (tasteRepository.count() == 0) {
-            setTaste();
-        }
-        if (upperWearRepository.count() == 0) {
-            setUpperWear();
-        }
-        if (lowerWearRepository.count() == 0) {
-            setLowerWear();
-        }
-        if (otherWearRepository.count() == 0) {
-            setOtherWear();
+        log.info("Initializing weather data...");
+
+        try {
+            if (weatherRepository.count() == 0) {
+                log.info("Weather data is empty. Initializing...");
+                setWeather();
+            } else {
+                log.info("Weather data already exists.");
+            }
+
+            if (tasteRepository.count() == 0) {
+                log.info("Taste data is empty. Initializing...");
+                setTaste();
+            } else {
+                log.info("Taste data already exists.");
+            }
+
+            if (upperWearRepository.count() == 0) {
+                log.info("Upper wear data is empty. Initializing...");
+                setUpperWear();
+            } else {
+                log.info("Upper wear data already exists.");
+            }
+
+            if (lowerWearRepository.count() == 0) {
+                log.info("Lower wear data is empty. Initializing...");
+                setLowerWear();
+            } else {
+                log.info("Lower wear data already exists.");
+            }
+
+            if (otherWearRepository.count() == 0) {
+                log.info("Other wear data is empty. Initializing...");
+                setOtherWear();
+            } else {
+                log.info("Other wear data already exists.");
+            }
+
+        } catch (Exception e) {
+            log.error("Error initializing data: ", e);
         }
     }
 
