@@ -12,8 +12,6 @@ public class SignUpRequest {
     @Email
     private String email;
     private int constitution;
+    private LocationPostRequestDto locationPostRequestDto;
 
-    //건너뛰기 가능한 영역
-    private ClosetDto closetDto;
-    private TasteDto tasteDto;
 }

@@ -1,7 +1,7 @@
 package com.appsolve.wearther_backend.config.jwt;
 
+import com.appsolve.wearther_backend.Entity.MemberEntity;
 import com.appsolve.wearther_backend.config.auth.PrincipalDetails;
-import com.appsolve.wearther_backend.Domain.Member;
 import com.appsolve.wearther_backend.Repository.MemberRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,7 +33,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (token != null) {
             Long userId = jwtProvider.getUserIdFromToken(token);
             if (userId != null) {
-                Member member = memberRepository.findByMemberId(userId);
+                MemberEntity member = memberRepository.findByMemberId(userId);
                 PrincipalDetails principalDetails = new PrincipalDetails(member);
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
                         principalDetails,
@@ -41,10 +41,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                         principalDetails.getAuthorities()
                 );
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                chain.doFilter(request,response);
             }
+        } else {
             chain.doFilter(request, response);
         }
-        chain.doFilter(request, response);
     }}
 
 

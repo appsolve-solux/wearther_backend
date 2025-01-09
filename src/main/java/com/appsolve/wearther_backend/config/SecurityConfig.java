@@ -42,7 +42,7 @@ public class SecurityConfig{
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/signUp","login").permitAll()
+                        .requestMatchers("member/signUp", "member/login", "member/duplication-check").permitAll()
                         .requestMatchers("/images/**", "/js/**", "/webjars/**").permitAll()
                         .anyRequest().authenticated()
                 )

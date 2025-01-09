@@ -87,7 +87,6 @@ public class JwtProvider {
         if (header == null || !header.startsWith("Bearer ")) {
             return null;
         }
-        System.out.println("여기 실행됏어염1");
         return header.replace("Bearer ", "");
     }
     public Long getUserIdFromToken(final String token) {

@@ -1,6 +1,6 @@
 package com.appsolve.wearther_backend.config.auth;
 
-import com.appsolve.wearther_backend.Domain.Member;
+import com.appsolve.wearther_backend.Entity.MemberEntity;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,8 +11,8 @@ import java.util.Collections;
 
 @Getter
 public class PrincipalDetails implements UserDetails {
-    private Member member;
-    public PrincipalDetails(Member member) {
+    private MemberEntity member;
+    public PrincipalDetails(MemberEntity member) {
         this.member = member;
     }
 
@@ -23,7 +23,7 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return member.getMember_pw();
+        return member.getUserPw();
     }
 
     @Override

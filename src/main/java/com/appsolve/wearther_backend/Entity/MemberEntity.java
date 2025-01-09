@@ -9,8 +9,9 @@ import java.util.List;
 
 import static jakarta.persistence.FetchType.LAZY;
 
+@Builder
 @Data
-@Entity @Builder
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor @Setter
 @Table(name = "member")
@@ -30,4 +31,8 @@ public class MemberEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberTaste> memberTastes = new ArrayList<>();
+
+    private  String refreshToken;
+
+
 }

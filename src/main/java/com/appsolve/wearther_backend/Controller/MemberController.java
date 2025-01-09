@@ -1,20 +1,20 @@
 package com.appsolve.wearther_backend.Controller;
 
+import com.appsolve.wearther_backend.Dto.SignUpRequest;
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
 import com.appsolve.wearther_backend.Dto.SignInRequest;
-import com.appsolve.wearther_backend.Dto.SignUpRequest;
 
 import com.appsolve.wearther_backend.Service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import com.appsolve.wearther_backend.apiResponse.ApiResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,20 +24,28 @@ public class MemberController {
 
     @PostMapping("/signUp")
     public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequest request) {
-        memberService.registerMember(request);
+         Long memberId = memberService.registerMember(request);
         return ApiResponse.success(HttpStatus.
-                CREATED,"회원가입 성공!");
+                CREATED,Map.of("memberId", memberId));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody SignInRequest request) {
+        Map<String, ?> authMap = memberService.signInMember(request);
+        String token =(String) authMap.remove("accessToken");
+        return ApiResponse.loginSuccess(HttpStatus.OK, authMap,token);
+    }
+
+    @GetMapping("/duplication-check")
+    public  ResponseEntity<?> checkDuplication(@RequestParam String loginId) {
+        boolean isDuplicated = memberService.isLoginIdDuplicated(loginId);
+        return ApiResponse.success(HttpStatus.OK, Map.of("isDuplicated", isDuplicated));
     }
 
     @GetMapping("/constitution/{memberId}")
     public ResponseEntity<ApiResponse<Integer>> getConstitution(@PathVariable Long memberId) {
         int constitution = memberService.getConstitutionByMemberId(memberId);
         return ApiResponse.success(HttpStatus.OK, constitution);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponse<HttpStatus>> login(@RequestBody SignInRequest request) {
-        return ApiResponse.loginSuccess(HttpStatus.OK, memberService.signInMember(request));
     }
 
     @PatchMapping("/constitution/update/{memberId}/{constitution}")
