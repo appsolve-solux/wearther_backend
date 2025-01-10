@@ -5,6 +5,7 @@ import com.appsolve.wearther_backend.Service.TasteService;
 import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
 import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
+import com.appsolve.wearther_backend.closet.dto.ShoppingListDto;
 import com.appsolve.wearther_backend.closet.service.ClosetService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +63,21 @@ public class ClosetController {
         }
         ClosetResponseDto result = new ClosetResponseDto(new ArrayList<>(uppers), new ArrayList<>(lowers), new ArrayList<>(others));
         return ApiResponse.success(HttpStatus.OK, result);
+    }
+
+    @GetMapping("/shopping/{memberId}")
+    public ResponseEntity<?> getShoppingList(@PathVariable("memberId") Long memberId) {
+        // TODO : 인증 객체로부터 멤버를 가져옴
+        MemberEntity member = memberService.getMemberById(memberId);
+        List<Long> tasteIds = memberService.getMemberTastes(memberId);
+
+        List<ShoppingListDto> shoppingListDtos = new ArrayList<>();
+        for (Long tasteId : tasteIds) {
+            // 리스트 생성
+            ShoppingListDto shoppingListDto = closetService.makeShoppingDto(memberId, tasteId);
+            shoppingListDtos.add(shoppingListDto);
+        }
+        return ApiResponse.success(HttpStatus.OK, shoppingListDtos);
     }
 
 }
