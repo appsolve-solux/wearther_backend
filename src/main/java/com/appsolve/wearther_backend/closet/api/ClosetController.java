@@ -1,12 +1,13 @@
 package com.appsolve.wearther_backend.closet.api;
 
 import com.appsolve.wearther_backend.Entity.MemberEntity;
-import com.appsolve.wearther_backend.Service.TasteService;
 import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
+import com.appsolve.wearther_backend.closet.service.ClosetService;
 import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
 import com.appsolve.wearther_backend.closet.dto.ShoppingListDto;
-import com.appsolve.wearther_backend.closet.service.ClosetService;
+import com.appsolve.wearther_backend.closet.dto.ShoppingRecommendDto;
+
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ public class ClosetController {
     private final ClosetService closetService;
     private final MemberService memberService;
 
-    public ClosetController(ClosetService closetService, MemberService memberService, TasteService tasteService) {
+    public ClosetController(ClosetService closetService, MemberService memberService) {
         this.closetService = closetService;
         this.memberService = memberService;
     }
@@ -47,6 +48,11 @@ public class ClosetController {
 
     @GetMapping("/recommend/{memberId}")
     public ResponseEntity<?> getRecommendedCloset(@PathVariable("memberId") Long memberId) {
+        ClosetResponseDto recommendedCloset = getRecommendedClosetData(memberId);
+        return ApiResponse.success(HttpStatus.OK, recommendedCloset);
+    }
+
+    private ClosetResponseDto getRecommendedClosetData(Long memberId) {
         // TODO : 인증 객체로부터 멤버를 가져옴
         MemberEntity member = memberService.getMemberById(memberId);
         List<Long> tasteIds = memberService.getMemberTastes(memberId);
@@ -61,8 +67,8 @@ public class ClosetController {
             lowers.addAll(recommendedClothes.getLowers());
             others.addAll(recommendedClothes.getOthers());
         }
-        ClosetResponseDto result = new ClosetResponseDto(new ArrayList<>(uppers), new ArrayList<>(lowers), new ArrayList<>(others));
-        return ApiResponse.success(HttpStatus.OK, result);
+
+        return new ClosetResponseDto(new ArrayList<>(uppers), new ArrayList<>(lowers), new ArrayList<>(others));
     }
 
     @GetMapping("/shopping/{memberId}")
@@ -73,7 +79,6 @@ public class ClosetController {
 
         List<ShoppingListDto> shoppingListDtos = new ArrayList<>();
         for (Long tasteId : tasteIds) {
-            // 리스트 생성
             ShoppingListDto shoppingListDto = closetService.makeShoppingDto(memberId, tasteId);
             shoppingListDtos.add(shoppingListDto);
         }

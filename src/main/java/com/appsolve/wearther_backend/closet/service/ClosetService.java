@@ -28,8 +28,7 @@ public class ClosetService {
     private final OtherWearRepository otherWearRepository;
     private final TasteService tasteService;
 
-    public ClosetService(ClosetUpperRepository closetUpperRepository, ClosetLowerRepository closetLowerRepository,
-                         ClosetOtherRepository closetOtherRepository, UpperWearRepository upperWearRepository, LowerWearRepository lowerWearRepository, OtherWearRepository otherWearRepository, TasteService tasteService) {
+    public ClosetService(ClosetUpperRepository closetUpperRepository, ClosetLowerRepository closetLowerRepository, ClosetOtherRepository closetOtherRepository, UpperWearRepository upperWearRepository, LowerWearRepository lowerWearRepository, OtherWearRepository otherWearRepository, TasteService tasteService) {
         this.closetUpperRepository = closetUpperRepository;
         this.closetLowerRepository = closetLowerRepository;
         this.closetOtherRepository = closetOtherRepository;
@@ -38,6 +37,7 @@ public class ClosetService {
         this.otherWearRepository = otherWearRepository;
         this.tasteService = tasteService;
     }
+
 
     public ClosetResponseDto getOwnedClothes(Long memberId) {
         List<Long> ownedUppers = getOwnedClothesByType(memberId, "upper");
