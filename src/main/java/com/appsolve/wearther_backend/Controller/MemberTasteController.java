@@ -19,6 +19,12 @@ public class MemberTasteController {
         this.memberTasteService = memberTasteService;
     }
 
+    @PostMapping("/create/{memberId}")
+    public ResponseEntity<ApiResponse<List<Long>>> createTastes(@PathVariable Long memberId, @RequestBody List<Long> tasteIds) {
+        memberTasteService.createMemberTastes(memberId, tasteIds);
+        return ApiResponse.success(HttpStatus.OK, tasteIds);
+    }
+
     @PatchMapping("/update/{memberId}")
     public ResponseEntity<ApiResponse<List<Long>>> updateTastes(@PathVariable Long memberId, @RequestBody List<Long> tasteIds) {
         memberTasteService.updateMemberTastes(memberId, tasteIds);
