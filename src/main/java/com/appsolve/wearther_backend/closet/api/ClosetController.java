@@ -31,9 +31,6 @@ public class ClosetController {
         this.memberService = memberService;
     }
 
-    // TODO : 사용자 로그인 여부 체크 로직 추가 필요
-    // TODO : 테스트 위해 인증객체 대신 일단 아이디를 변수로 받아옴
-
     @GetMapping("/clothes/{memberId}")
     public ResponseEntity<?> getMemberCloset(@PathVariable("memberId") Long memberId) {
         // TODO : 인증 객체로부터 멤버를 가져옴
@@ -44,15 +41,14 @@ public class ClosetController {
 
     @GetMapping("/recommend/{memberId}")
     public ResponseEntity<?> getRecommendedCloset(@PathVariable("memberId") Long memberId) {
+        // TODO : 인증 객체로부터 멤버를 가져옴
+        MemberEntity member = memberService.getMemberById(memberId);
         ClosetResponseDto recommendedCloset = getRecommendedClosetData(memberId);
         return ApiResponse.success(HttpStatus.OK, recommendedCloset);
     }
 
     private ClosetResponseDto getRecommendedClosetData(Long memberId) {
-        // TODO : 인증 객체로부터 멤버를 가져옴
-        MemberEntity member = memberService.getMemberById(memberId);
         List<Long> tasteIds = memberService.getMemberTastes(memberId);
-
         Set<Long> uppers = new HashSet<>();
         Set<Long> lowers = new HashSet<>();
         Set<Long> others = new HashSet<>();
