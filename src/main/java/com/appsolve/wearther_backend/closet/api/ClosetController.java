@@ -6,12 +6,9 @@ import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
 import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
 import com.appsolve.wearther_backend.closet.dto.ClosetUpdateRequestDto;
-import com.appsolve.wearther_backend.closet.service.ClosetService;
-import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
 import com.appsolve.wearther_backend.closet.dto.ShoppingListDto;
-import com.appsolve.wearther_backend.closet.dto.ShoppingRecommendDto;
 
-
+import com.appsolve.wearther_backend.closet.service.ClosetService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 
 @Slf4j
 @RestController
@@ -78,9 +74,17 @@ public class ClosetController {
         List<Long> tasteIds = memberService.getMemberTastes(memberId);
 
         List<ShoppingListDto> shoppingListDtos = new ArrayList<>();
-        for (Long tasteId : tasteIds) {
-            ShoppingListDto shoppingListDto = closetService.makeShoppingDto(memberId, tasteId);
+
+        if (tasteIds.isEmpty()) {
+            ShoppingListDto shoppingListDto = closetService.makeShoppingDtoifUserNoTaste(memberId);
             shoppingListDtos.add(shoppingListDto);
+        }
+        else {
+            for (Long tasteId : tasteIds) {
+                System.out.println(tasteId);
+                ShoppingListDto shoppingListDto = closetService.makeShoppingDto(memberId, tasteId);
+                shoppingListDtos.add(shoppingListDto);
+            }
         }
         return ApiResponse.success(HttpStatus.OK, shoppingListDtos);
     }
@@ -92,6 +96,4 @@ public class ClosetController {
         closetService.updateUserCloset(memberId, updateRequestDto.getUppers(), updateRequestDto.getLowers(), updateRequestDto.getOthers());
         return ApiResponse.success(HttpStatus.OK, updateRequestDto);
     }
-
-
 }
