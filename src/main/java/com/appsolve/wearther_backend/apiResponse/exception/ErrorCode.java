@@ -21,9 +21,21 @@ public enum ErrorCode {
     /*에러 추가 가능*/
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4001", "존재하지 않는 사용자 ID입니다."),
     USER_NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "USER4002", "사용자 인증이 필요합니다."),
+    NOT_FOUND_AUTHORIZATION(HttpStatus.UNAUTHORIZED, "USER4003","Authorization 오류가 있습니다."),
+    DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST,"USER4006" ,"중복된 이메일입니다" ),
+    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "USER4011", "로그인 정보가 잘못되었습니다."),
+
+
     DUPLICATE_LOCATION(HttpStatus.BAD_REQUEST, "LOCATION4001", "중복된 위치 정보입니다."),
     INDEX_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4003", "해당 사용자 정보에 존재하지 않는 인덱스입니다."),
-    Weather_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4004", "날씨 정보를 가져올 수 없습니다");
+    Weather_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4004", "날씨 정보를 가져올 수 없습니다"),
+
+    /* JWT 관련 에러 */
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "JWT4001", "유효하지 않은 JWT 토큰입니다."),
+    INVALID_SIGNATURE(HttpStatus.UNAUTHORIZED, "JWT4002", "JWT 서명이 유효하지 않습니다."),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "JWT4003", "JWT 토큰이 만료되었습니다."),
+    UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED, "JWT4004", "지원하지 않는 JWT 토큰입니다."),
+    EMPTY_CLAIMS(HttpStatus.UNAUTHORIZED, "JWT4005", "JWT claims 문자열이 비어 있습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
