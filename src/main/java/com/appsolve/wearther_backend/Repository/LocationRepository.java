@@ -9,11 +9,17 @@ import java.util.Optional;
 
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
-    boolean existsByMemberIdAndLocationIndex(Long memberId, Integer locationIndex);
-    void deleteByMemberIdAndLocationIndex(Long memberId, Integer locationIndex);
 
-    List<Location> findLocationsByMemberId(Long memberId);
-    Optional<Location> findByMemberIdAndLocationIndex(Long memberId, int locationIndex);
+    Optional<Location> findByMember_MemberIdAndLocationIndex(Long memberId, Integer locationIndex);
 
-    List<Location> findByMemberIdAndLocationIndexGreaterThan(Long memberId, Integer locationIndex);
+    boolean existsByMember_MemberIdAndLocationIndex(Long memberId, Integer locationIndex);
+
+    void deleteByMember_MemberIdAndLocationIndex(Long memberId, Integer locationIndex);
+
+    List<Location> findByMember_MemberIdAndLocationIndexGreaterThan(Long memberId, Integer locationIndex);
+
+    List<Location> findLocationsByMember_MemberId(Long memberId);
+
+    List<Location> findAllByMember_MemberId(Long memberId);
 }
+

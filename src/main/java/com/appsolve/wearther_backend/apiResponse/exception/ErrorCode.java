@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @Getter
 public enum ErrorCode {
+
+
     _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "서버 에러, 관리자에게 문의 바랍니다."),
     _BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON400", "잘못된 요청입니다."),
     _UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON401", "인증이 필요합니다."),
@@ -26,6 +28,8 @@ public enum ErrorCode {
 
 
     DUPLICATE_LOCATION(HttpStatus.BAD_REQUEST, "LOCATION4001", "중복된 위치 정보입니다."),
+    INDEX_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4003", "해당 사용자 정보에 존재하지 않는 인덱스입니다."),
+    Weather_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4004", "날씨 정보를 가져올 수 없습니다"),
 
     /* JWT 관련 에러 */
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "JWT4001", "유효하지 않은 JWT 토큰입니다."),
