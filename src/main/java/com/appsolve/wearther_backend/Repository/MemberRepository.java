@@ -10,11 +10,16 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
-    @Query("SELECT m.constitution FROM MemberEntity m WHERE m.memberId = :memberId")
+    @Query("SELECT m.constitution FROM MemberEntity m WHERE m.id = :memberId")
     int findConstitutionByMemberId(@Param("memberId") Long memberId);
 
     @Modifying
     @Transactional
     @Query("UPDATE MemberEntity m SET m.constitution = :constitution WHERE m.memberId = :memberId")
     void updateConstitutionByMemberId(@Param("memberId") Long memberId, @Param("constitution") int constitution);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE MemberEntity m SET m.userPw = :newPassword WHERE m.memberId = :memberId")
+    void updateUserPwByMemberId(@Param("memberId") Long memberId, @Param("newPassword") String newPassword);
 }

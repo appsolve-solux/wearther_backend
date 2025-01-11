@@ -22,12 +22,15 @@ public class Taste {
     @Column(name="taste_name", length=100) @NotNull
     private String name;
 
+    @Builder.Default
     @OneToMany(mappedBy = "taste", fetch = LAZY)
     private List<TasteUpperWear> upperWears = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "taste", fetch = FetchType.LAZY)
     private List<TasteLowerWear> lowerWears = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "taste", fetch = LAZY)
     private List<TasteOtherWear> otherWears = new ArrayList<>();
 }

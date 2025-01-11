@@ -7,8 +7,9 @@ import lombok.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder @Getter
-@Table(name="closet_upper")
+@Builder
+@Getter
+@Table(name = "closet_upper")
 public class ClosetUpper {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,8 +1,11 @@
 package com.appsolve.wearther_backend.closet.api;
 
 import com.appsolve.wearther_backend.Entity.MemberEntity;
+import com.appsolve.wearther_backend.Service.TasteService;
 import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
+import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
+import com.appsolve.wearther_backend.closet.dto.ClosetUpdateRequestDto;
 import com.appsolve.wearther_backend.closet.service.ClosetService;
 import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
 import com.appsolve.wearther_backend.closet.dto.ShoppingListDto;
@@ -12,10 +15,7 @@ import com.appsolve.wearther_backend.closet.dto.ShoppingRecommendDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,7 +30,7 @@ public class ClosetController {
     private final ClosetService closetService;
     private final MemberService memberService;
 
-    public ClosetController(ClosetService closetService, MemberService memberService) {
+    public ClosetController(ClosetService closetService, MemberService memberService, TasteService tasteService) {
         this.closetService = closetService;
         this.memberService = memberService;
     }
@@ -84,5 +84,14 @@ public class ClosetController {
         }
         return ApiResponse.success(HttpStatus.OK, shoppingListDtos);
     }
+
+    @PatchMapping("/update/{memberId}")
+    public ResponseEntity<?> updateUserCloset(@PathVariable("memberId") Long memberId,
+                                              @RequestBody ClosetUpdateRequestDto updateRequestDto) {
+        // 사용자가 보유한 옷을 업데이트
+        closetService.updateUserCloset(memberId, updateRequestDto.getUppers(), updateRequestDto.getLowers(), updateRequestDto.getOthers());
+        return ApiResponse.success(HttpStatus.OK, updateRequestDto);
+    }
+
 
 }

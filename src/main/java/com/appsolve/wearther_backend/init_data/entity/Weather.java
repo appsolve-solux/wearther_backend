@@ -25,12 +25,15 @@ public class Weather {
     @Column(name = "weather_description")
     private String description;
 
+    @Builder.Default
     @OneToMany(mappedBy = "weather", fetch = LAZY)
     private List<WeatherUpperWear> weatherUpperWearList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "weather", fetch = LAZY)
     private List<WeatherLowerWear> lowerWears = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "weather", fetch = LAZY)
     private List<WeatherOtherWear> otherWears = new ArrayList<>();
 }

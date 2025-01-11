@@ -7,4 +7,6 @@ public class LocationPostRequestDto {
     private Long memberId;
     private String locationInfo;
     private Integer locationIndex;
+    private Double latitude;
+    private Double longitude;
 }
