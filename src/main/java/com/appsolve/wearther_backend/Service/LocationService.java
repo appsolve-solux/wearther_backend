@@ -2,10 +2,12 @@ package com.appsolve.wearther_backend.Service;
 
 import com.appsolve.wearther_backend.Dto.LocationPostRequestDto;
 import com.appsolve.wearther_backend.Entity.Location;
+import com.appsolve.wearther_backend.Entity.MemberEntity;
 import com.appsolve.wearther_backend.Repository.LocationRepository;
+import com.appsolve.wearther_backend.Repository.MemberRepository;
 import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
 import com.appsolve.wearther_backend.apiResponse.exception.ErrorCode;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,13 +15,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class LocationService {
-    @Autowired
-    private LocationRepository locationRepository;
+    private final LocationRepository locationRepository;
+    private final MemberRepository memberRepository;  // MemberEntity를 조회하기 위해 필요
 
     public Location addLocation(LocationPostRequestDto locationRequest) {
-
-        Optional<Location> existingLocation = locationRepository.findByMemberIdAndLocationIndex(
+        Optional<Location> existingLocation = locationRepository.findByMember_MemberIdAndLocationIndex(
                 locationRequest.getMemberId(), locationRequest.getLocationIndex()
         );
 
@@ -27,65 +29,98 @@ public class LocationService {
             throw new CustomException(ErrorCode.DUPLICATE_LOCATION);
         }
 
-        Location location = new Location();
-        location.setMemberId(locationRequest.getMemberId());
-        location.setLocationInfo(locationRequest.getLocationInfo());
-        location.setLocationIndex(locationRequest.getLocationIndex());
+        MemberEntity member = memberRepository.findById(locationRequest.getMemberId())
+                .orElseThrow(() -> new CustomException(ErrorCode._BAD_REQUEST));
+
+        Location location = Location.builder()
+                .member(member)
+                .locationInfo(locationRequest.getLocationInfo())
+                .locationIndex(locationRequest.getLocationIndex())
+                .latitude(locationRequest.getLatitude())
+                .longitude(locationRequest.getLongitude())
+                .build();
 
         return locationRepository.save(location);
     }
 
     @Transactional
     public void deleteLocationByMemberIdAndLocationIndex(Long memberId, Integer locationIndex) {
-        if (locationRepository.existsByMemberIdAndLocationIndex(memberId, locationIndex)) {
+        if (locationRepository.existsByMember_MemberIdAndLocationIndex(memberId, locationIndex)) {
             // 삭제 수행
-            locationRepository.deleteByMemberIdAndLocationIndex(memberId, locationIndex);
+            locationRepository.deleteByMember_MemberIdAndLocationIndex(memberId, locationIndex);
 
             // 이후 인덱스를 가진 레코드들의 인덱스를 업데이트
-            List<Location> locationsToUpdate = locationRepository.findByMemberIdAndLocationIndexGreaterThan(memberId, locationIndex);
-            for (Location location : locationsToUpdate) {
-                location.setLocationIndex(location.getLocationIndex() - 1); // 인덱스를 1 감소
-            }
-            locationRepository.saveAll(locationsToUpdate); // 변경 사항 저장
+            List<Location> locationsToUpdate = locationRepository
+                    .findByMember_MemberIdAndLocationIndexGreaterThan(memberId, locationIndex);
+
+            locationsToUpdate.forEach(location -> {
+                Location updatedLocation = Location.builder()
+                        .locationId(location.getLocationId())
+                        .member(location.getMember())
+                        .locationInfo(location.getLocationInfo())
+                        .locationIndex(location.getLocationIndex() - 1)
+                        .latitude(location.getLatitude())
+                        .longitude(location.getLongitude())
+                        .build();
+                locationRepository.save(updatedLocation);
+            });
         } else {
             throw new CustomException(ErrorCode.INDEX_NOT_FOUND);
         }
     }
 
-
     @Transactional
     public void updateLocationIndex(Long memberId, int beforeLocationIndex, int afterLocationIndex) {
-        //현재 위치를 찾기
         Location locationToUpdate = locationRepository
-                .findByMemberIdAndLocationIndex(memberId, beforeLocationIndex)
+                .findByMember_MemberIdAndLocationIndex(memberId, beforeLocationIndex)
                 .orElseThrow(() -> new IllegalArgumentException("Location not found"));
 
-        //해당 memberId를 가진 모든 주소를 불러옴
-        List<Location> locations = locationRepository.findLocationsByMemberId(memberId);
+        List<Location> locations = locationRepository.findLocationsByMember_MemberId(memberId);
 
         if (beforeLocationIndex != afterLocationIndex) {
             if (beforeLocationIndex < afterLocationIndex) {
                 // 뒤로 이동할 경우
-                for (int i = 0; i < locations.size(); i++) {
-                    Location loc = locations.get(i);
-                    if (loc.getLocationIndex() > beforeLocationIndex && loc.getLocationIndex() <= afterLocationIndex) {
-                        loc.setLocationIndex(loc.getLocationIndex() - 1); // 1씩 내려줌
-                        locationRepository.save(loc);
-                    }
-                }
+                locations.stream()
+                        .filter(loc -> loc.getLocationIndex() > beforeLocationIndex
+                                && loc.getLocationIndex() <= afterLocationIndex)
+                        .forEach(loc -> {
+                            Location updatedLocation = Location.builder()
+                                    .locationId(loc.getLocationId())
+                                    .member(loc.getMember())
+                                    .locationInfo(loc.getLocationInfo())
+                                    .locationIndex(loc.getLocationIndex() - 1)
+                                    .latitude(loc.getLatitude())
+                                    .longitude(loc.getLongitude())
+                                    .build();
+                            locationRepository.save(updatedLocation);
+                        });
             } else {
                 // 앞쪽으로 이동할 경우
-                for (int i = 0; i < locations.size(); i++) {
-                    Location loc = locations.get(i);
-                    if (loc.getLocationIndex() >= afterLocationIndex && loc.getLocationIndex() < beforeLocationIndex) {
-                        loc.setLocationIndex(loc.getLocationIndex() + 1); // 1씩 올려줌
-                        locationRepository.save(loc);
-                    }
-                }
+                locations.stream()
+                        .filter(loc -> loc.getLocationIndex() >= afterLocationIndex
+                                && loc.getLocationIndex() < beforeLocationIndex)
+                        .forEach(loc -> {
+                            Location updatedLocation = Location.builder()
+                                    .locationId(loc.getLocationId())
+                                    .member(loc.getMember())
+                                    .locationInfo(loc.getLocationInfo())
+                                    .locationIndex(loc.getLocationIndex() + 1)
+                                    .latitude(loc.getLatitude())
+                                    .longitude(loc.getLongitude())
+                                    .build();
+                            locationRepository.save(updatedLocation);
+                        });
             }
 
-            locationToUpdate.setLocationIndex(afterLocationIndex);
-            locationRepository.save(locationToUpdate);
+            Location finalUpdate = Location.builder()
+                    .locationId(locationToUpdate.getLocationId())
+                    .member(locationToUpdate.getMember())
+                    .locationInfo(locationToUpdate.getLocationInfo())
+                    .locationIndex(afterLocationIndex)
+                    .latitude(locationToUpdate.getLatitude())
+                    .longitude(locationToUpdate.getLongitude())
+                    .build();
+            locationRepository.save(finalUpdate);
         }
     }
 }

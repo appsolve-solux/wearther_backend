@@ -22,7 +22,8 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4001", "존재하지 않는 사용자 ID입니다."),
     USER_NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "USER4002", "사용자 인증이 필요합니다."),
     DUPLICATE_LOCATION(HttpStatus.BAD_REQUEST, "LOCATION4001", "중복된 위치 정보입니다."),
-    INDEX_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4003", "해당 사용자 정보에 존재하지 않는 인덱스입니다.");
+    INDEX_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4003", "해당 사용자 정보에 존재하지 않는 인덱스입니다."),
+    Weather_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4004", "날씨 정보를 가져올 수 없습니다");
 
     private final HttpStatus httpStatus;
     private final String code;
