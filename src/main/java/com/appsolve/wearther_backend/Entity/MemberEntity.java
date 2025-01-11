@@ -25,6 +25,8 @@ public class MemberEntity {
     private String userPw;
     private Integer constitution;
 
+
+
     @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "closet_id")
     private Closet closet;
@@ -32,7 +34,8 @@ public class MemberEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberTaste> memberTastes = new ArrayList<>();
 
-    private  String refreshToken;
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Location> locations = new ArrayList<>();
 
 
 }
