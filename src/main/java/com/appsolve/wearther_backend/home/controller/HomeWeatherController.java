@@ -4,6 +4,7 @@ import com.appsolve.wearther_backend.apiResponse.ApiResponse;
 import com.appsolve.wearther_backend.home.dto.WeatherResponseDto;
 import com.appsolve.wearther_backend.home.service.HomeWeatherService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,11 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/home")
+@RequestMapping("/home/weather")
 public class HomeWeatherController {
+
+    @Autowired
     private HomeWeatherService HomeWeatherService;
 
-    @GetMapping("/weather/{latitude}/{longitude}")
+    @GetMapping("/current/{latitude}/{longitude}")
     public ResponseEntity<ApiResponse<WeatherResponseDto>> getCurrentWeather (@PathVariable Double latitude, @PathVariable Double longitude){
         WeatherResponseDto currentWeather = HomeWeatherService.getWeatherValue(latitude, longitude);
         return ApiResponse.success(HttpStatus.OK, currentWeather);
