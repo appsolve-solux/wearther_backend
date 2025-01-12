@@ -7,6 +7,7 @@ import com.appsolve.wearther_backend.Entity.MemberEntity;
 import com.appsolve.wearther_backend.Repository.MemberTasteRepository;
 import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
 import com.appsolve.wearther_backend.apiResponse.exception.ErrorCode;
+import com.appsolve.wearther_backend.closet.entity.Closet;
 import com.appsolve.wearther_backend.config.auth.PrincipalDetails;
 import com.appsolve.wearther_backend.config.jwt.JwtProvider;
 import com.appsolve.wearther_backend.Repository.MemberRepository;

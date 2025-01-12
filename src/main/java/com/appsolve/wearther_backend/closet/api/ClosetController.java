@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
 @Slf4j
 @RestController
 @RequestMapping("/api/closet")
@@ -30,6 +31,15 @@ public class ClosetController {
         this.closetService = closetService;
         this.memberService = memberService;
     }
+
+    @PostMapping("createCloset")
+    public  ResponseEntity<?> createClosetByMember(@RequestHeader("Authorization") String token, @RequestBody ClosetUpdateRequestDto updateRequestDto) {
+        closetService.createCloset(updateRequestDto, token);
+        return ApiResponse.success(HttpStatus.CREATED,"옷장 만들었습니다.");
+    }
+
+    // TODO : 사용자 로그인 여부 체크 로직 추가 필요
+    // TODO : 테스트 위해 인증객체 대신 일단 아이디를 변수로 받아옴
 
     @GetMapping("/clothes/{memberId}")
     public ResponseEntity<?> getMemberCloset(@PathVariable("memberId") Long memberId) {
@@ -49,6 +59,7 @@ public class ClosetController {
 
     private ClosetResponseDto getRecommendedClosetData(Long memberId) {
         List<Long> tasteIds = memberService.getMemberTastes(memberId);
+
         Set<Long> uppers = new HashSet<>();
         Set<Long> lowers = new HashSet<>();
         Set<Long> others = new HashSet<>();
@@ -92,4 +103,6 @@ public class ClosetController {
         closetService.updateUserCloset(memberId, updateRequestDto.getUppers(), updateRequestDto.getLowers(), updateRequestDto.getOthers());
         return ApiResponse.success(HttpStatus.OK, updateRequestDto);
     }
+
+
 }

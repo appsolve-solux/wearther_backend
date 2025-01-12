@@ -2,6 +2,7 @@ package com.appsolve.wearther_backend.Service;
 
 import com.appsolve.wearther_backend.Entity.MemberEntity;
 import com.appsolve.wearther_backend.Entity.MemberTaste;
+import com.appsolve.wearther_backend.Repository.MemberRepository;
 import com.appsolve.wearther_backend.Repository.MemberTasteRepository;
 import com.appsolve.wearther_backend.init_data.entity.Taste;
 import jakarta.transaction.Transactional;
@@ -14,9 +15,13 @@ import java.util.stream.Collectors;
 public class MemberTasteService {
 
     private final MemberTasteRepository memberTasteRepository;
+    private final MemberRepository memberRepository;
+    private final AuthService authService;
 
-    public MemberTasteService(MemberTasteRepository memberTasteRepository) {
+    public MemberTasteService(MemberTasteRepository memberTasteRepository,AuthService authService, MemberRepository memberRepository) {
         this.memberTasteRepository = memberTasteRepository;
+        this.memberRepository = memberRepository;
+        this.authService = authService;
     }
 
     @Transactional
@@ -52,4 +57,24 @@ public class MemberTasteService {
     }
 
 
+    public void createMemberTastes(String token, List<Long> tasteIds) {
+
+        MemberEntity member = authService.getMemberEntityFromToken(token);
+        System.out.println("memberId"+member.getMemberId());
+        for (Long tasteId : tasteIds) {
+
+            Taste taste = Taste.builder()
+                    .id(tasteId)
+                    .build();
+
+            MemberTaste memberTaste = MemberTaste.builder()
+                    .member(member)
+                    .taste(taste)
+                    .build();
+
+            memberTasteRepository.save(memberTaste);
+
+
+        }
+    }
 }
