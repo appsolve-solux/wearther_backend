@@ -3,6 +3,7 @@ package com.appsolve.wearther_backend.closet.service;
 import com.appsolve.wearther_backend.Entity.MemberEntity;
 import com.appsolve.wearther_backend.Repository.MemberRepository;
 import com.appsolve.wearther_backend.Service.AuthService;
+import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.Service.TasteService;
 import com.appsolve.wearther_backend.closet.ShoppingUrls;
 import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
@@ -27,10 +28,9 @@ import com.appsolve.wearther_backend.init_data.entity.UpperWear;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -43,17 +43,13 @@ public class ClosetService {
     private final OtherWearRepository otherWearRepository;
     private final ClosetRepository closetRepository;
     private final TasteService tasteService;
-    private final UpperWearRepository upperWearRepository;  // UpperWearRepository 추가
-    private final LowerWearRepository lowerWearRepository;  // LowerWearRepository 추가
-    private final OtherWearRepository otherWearRepository;
-    private final MemberRepository memberRepository;
     private final AuthService authService;
 
     public ClosetService(AuthService authService,
             ClosetUpperRepository closetUpperRepository, MemberRepository memberRepository, ClosetLowerRepository closetLowerRepository,
                          ClosetOtherRepository closetOtherRepository, ClosetRepository closetRepository,
                          UpperWearRepository upperWearRepository, LowerWearRepository lowerWearRepository,
-                         OtherWearRepository otherWearRepository, TasteService tasteService, EntityManager entityManager) {
+                         OtherWearRepository otherWearRepository, TasteService tasteService) {
         this.closetUpperRepository = closetUpperRepository;
         this.closetLowerRepository = closetLowerRepository;
         this.closetOtherRepository = closetOtherRepository;
@@ -62,7 +58,6 @@ public class ClosetService {
         this.otherWearRepository = otherWearRepository;
         this.closetRepository = closetRepository;
         this.tasteService = tasteService;
-        this.memberRepository = memberRepository;
         this.authService = authService;
     }
 
