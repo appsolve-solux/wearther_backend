@@ -1,30 +1,33 @@
 package com.appsolve.wearther_backend.closet.service;
 
 import com.appsolve.wearther_backend.Service.TasteService;
+import com.appsolve.wearther_backend.closet.ShoppingUrls;
 import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
 import com.appsolve.wearther_backend.closet.entity.Closet;
 import com.appsolve.wearther_backend.closet.entity.ClosetLower;
 import com.appsolve.wearther_backend.closet.entity.ClosetOther;
 import com.appsolve.wearther_backend.closet.entity.ClosetUpper;
+import com.appsolve.wearther_backend.closet.dto.ShoppingListDto;
+import com.appsolve.wearther_backend.closet.dto.ShoppingRecommendDto;
 import com.appsolve.wearther_backend.closet.repository.ClosetLowerRepository;
 import com.appsolve.wearther_backend.closet.repository.ClosetOtherRepository;
 import com.appsolve.wearther_backend.closet.repository.ClosetRepository;
 import com.appsolve.wearther_backend.closet.repository.ClosetUpperRepository;
-import com.appsolve.wearther_backend.init_data.entity.LowerWear;
-import com.appsolve.wearther_backend.init_data.entity.OtherWear;
-import com.appsolve.wearther_backend.init_data.entity.UpperWear;
 import com.appsolve.wearther_backend.init_data.repository.LowerWearRepository;
 import com.appsolve.wearther_backend.init_data.repository.OtherWearRepository;
 import com.appsolve.wearther_backend.init_data.repository.UpperWearRepository;
-import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManager;
+import org.apache.commons.lang3.tuple.Pair;
+import com.appsolve.wearther_backend.init_data.entity.LowerWear;
+import com.appsolve.wearther_backend.init_data.entity.OtherWear;
+import com.appsolve.wearther_backend.init_data.entity.UpperWear;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -32,17 +35,13 @@ public class ClosetService {
     private final ClosetUpperRepository closetUpperRepository;
     private final ClosetLowerRepository closetLowerRepository;
     private final ClosetOtherRepository closetOtherRepository;
+    private final UpperWearRepository upperWearRepository;
+    private final LowerWearRepository lowerWearRepository;
+    private final OtherWearRepository otherWearRepository;
     private final ClosetRepository closetRepository;
     private final TasteService tasteService;
-    private final UpperWearRepository upperWearRepository;  // UpperWearRepository 추가
-    private final LowerWearRepository lowerWearRepository;  // LowerWearRepository 추가
-    private final OtherWearRepository otherWearRepository;
-    private final EntityManager entityManager;
 
-    public ClosetService(ClosetUpperRepository closetUpperRepository, ClosetLowerRepository closetLowerRepository,
-                         ClosetOtherRepository closetOtherRepository, ClosetRepository closetRepository,
-                         UpperWearRepository upperWearRepository, LowerWearRepository lowerWearRepository,
-                         OtherWearRepository otherWearRepository,TasteService tasteService, EntityManager entityManager) {
+    public ClosetService(ClosetUpperRepository closetUpperRepository, ClosetLowerRepository closetLowerRepository, ClosetOtherRepository closetOtherRepository, UpperWearRepository upperWearRepository, LowerWearRepository lowerWearRepository, OtherWearRepository otherWearRepository, ClosetRepository closetRepository, TasteService tasteService) {
         this.closetUpperRepository = closetUpperRepository;
         this.closetLowerRepository = closetLowerRepository;
         this.closetOtherRepository = closetOtherRepository;
@@ -51,7 +50,6 @@ public class ClosetService {
         this.otherWearRepository = otherWearRepository;
         this.closetRepository = closetRepository;
         this.tasteService = tasteService;
-        this.entityManager = entityManager;
     }
 
     public ClosetResponseDto getOwnedClothes(Long memberId) {
@@ -109,6 +107,85 @@ public class ClosetService {
                 .collect(Collectors.toList());
     }
 
+    public ShoppingListDto makeShoppingDto(Long memberId, Long tasteId) {
+        List<Long> ownedUppers = getOwnedClothesByType(memberId, "upper");
+        List<Long> ownedLowers = getOwnedClothesByType(memberId, "lower");
+        List<Long> ownedOthers = getOwnedClothesByType(memberId, "other");
+
+        List<Long> tasteUppers = tasteService.getClothesByTasteId(tasteId, "upper");
+        List<Long> tasteLowers = tasteService.getClothesByTasteId(tasteId, "lower");
+        List<Long> tasteOthers = tasteService.getClothesByTasteId(tasteId, "other");
+
+        List<Long> unownedUppers = filterUnownedClothes(ownedUppers, tasteUppers);
+        List<Long> unownedLowers = filterUnownedClothes(ownedLowers, tasteLowers);
+        List<Long> unownedOthers = filterUnownedClothes(ownedOthers, tasteOthers);
+
+        List<ShoppingRecommendDto> recommendList = new ArrayList<>();
+        recommendList.addAll(convertToRecommendDto(unownedUppers, "upper"));
+        recommendList.addAll(convertToRecommendDto(unownedLowers, "lower"));
+        recommendList.addAll(convertToRecommendDto(unownedOthers, "other"));
+
+        return ShoppingListDto.builder()
+                .tasteId(tasteId)
+                .shoppingRecommendDtoList(recommendList)
+                .build();
+    }
+
+    public ShoppingListDto makeShoppingDtoifUserNoTaste(Long memberId) {
+        List<Long> ownedUppers = getOwnedClothesByType(memberId, "upper");
+        List<Long> ownedLowers = getOwnedClothesByType(memberId, "lower");
+        List<Long> ownedOthers = getOwnedClothesByType(memberId, "other");
+
+        List<Long> tasteUppers =  upperWearRepository.findAllIds();
+        List<Long> tasteLowers =  lowerWearRepository.findAllIds();
+        List<Long> tasteOthers = otherWearRepository.findAllIds();
+
+        List<Long> unownedUppers = filterUnownedClothes(ownedUppers, tasteUppers);
+        List<Long> unownedLowers = filterUnownedClothes(ownedLowers, tasteLowers);
+        List<Long> unownedOthers = filterUnownedClothes(ownedOthers, tasteOthers);
+
+        List<ShoppingRecommendDto> recommendList = new ArrayList<>();
+        recommendList.addAll(convertToRecommendDto(unownedUppers, "upper"));
+        recommendList.addAll(convertToRecommendDto(unownedLowers, "lower"));
+        recommendList.addAll(convertToRecommendDto(unownedOthers, "other"));
+
+        return ShoppingListDto.builder()
+                .tasteId(0L)
+                .shoppingRecommendDtoList(recommendList)
+                .build();
+    }
+
+    private String getProductName(Long clothId, String category) {
+        String result = "";
+        return switch (category) {
+            case "upper" -> upperWearRepository.findNameById(clothId);
+            case "lower" -> lowerWearRepository.findNameById(clothId);
+            case "other" -> otherWearRepository.findNameById(clothId);
+            default -> result; // 예외 던지기
+        };
+    }
+
+    private List<ShoppingRecommendDto> convertToRecommendDto(List<Long> clothIds, String category) {
+        Map<Long, List<Pair<String, String>>> infoMap = getInfoMapByCategory(category);
+        return clothIds.stream()
+                .flatMap(clothId -> {
+                    List<Pair<String, String>> infoList = infoMap.get(clothId);
+                    if (infoList == null) return Stream.empty();
+                    return infoList.stream().map(info ->
+                            new ShoppingRecommendDto(category, clothId, getProductName(clothId, category), info.getLeft(), info.getRight())
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+    private Map<Long, List<Pair<String, String>>> getInfoMapByCategory(String category) {
+        return switch (category) {
+            case "upper" -> ShoppingUrls.UPPER_WEAR_INFO;
+            case "lower" -> ShoppingUrls.LOWER_WEAR_INFO;
+            case "other" -> ShoppingUrls.OTHER_WEAR_INFO;
+            default -> Collections.emptyMap();
+        };
+    }
 
     public void updateUserCloset(Long memberId, List<Long> newUppers, List<Long> newLowers, List<Long> newOthers) {
         Closet closet = closetRepository.findClosetById(memberId)
@@ -138,7 +215,6 @@ public class ClosetService {
         }
     }
 
-
     private UpperWear findUpperWearById(Long upperId) {
         return upperWearRepository.findById(upperId)
                 .orElseThrow(() -> new RuntimeException("Upper Wear not found"));
@@ -153,4 +229,6 @@ public class ClosetService {
         return otherWearRepository.findById(otherId)
                 .orElseThrow(() -> new RuntimeException("Other Wear not found"));
     }
+
+
 }

@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BuyRecommendDto {
+public class ShoppingRecommendDto {
     private String category;
+    private Long wear_id;
     private String productName;
     private String productUrl;
     private String mallName;
