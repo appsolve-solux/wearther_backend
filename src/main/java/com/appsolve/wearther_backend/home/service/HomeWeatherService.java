@@ -131,11 +131,11 @@ public class HomeWeatherService {
                     String fcstValue = element.getElementsByTagName("fcstValue").item(0).getTextContent();
 
                     if ("TMN".equals(category)) {
-                        temperatureMin = fcstValue + "°C" + fcstTime;
+                        temperatureMin = fcstValue + "°C";
                     } else if ("TMX".equals(category)) {
-                        temperatureMax = fcstValue + "°C" + fcstTime;
+                        temperatureMax = fcstValue + "°C";
                     } else if ("REH".equals(category) && fcstDate.equals(formatDate) && fcstTime.equals(formatHour)) {
-                        humidity = fcstValue + "%" + fcstTime;
+                        humidity = fcstValue + "%";
                     }
 
                     // 시간 비교하여 다음 7개의 데이터 수집
@@ -145,7 +145,7 @@ public class HomeWeatherService {
                         }
                         if (foundStart) {
                             if ("TMP".equals(category)) {
-                                hourlyTemp.add(fcstValue + "°C" + fcstTime);
+                                hourlyTemp.add(fcstValue + "°C");
                             } else if ("SKY".equals(category)) {
                                 // 하늘 상태 코드 변환
                                 String skyDescription = switch (fcstValue) {
@@ -155,7 +155,7 @@ public class HomeWeatherService {
                                     case "4" -> "흐림";
                                     default -> "알 수 없음";
                                 };
-                                hourlySky.add(skyDescription + fcstTime);
+                                hourlySky.add(skyDescription);
                             }
                         }
                     }
