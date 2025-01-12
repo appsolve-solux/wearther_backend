@@ -146,7 +146,6 @@ public class LocationWeatherService {
                         throw new RuntimeException(e);
                     }
 
-
                     return new LocationWeatherResponseDto.LocationWeatherInfo(
                             location.getLocationInfo(),
                             location.getLocationIndex(),
@@ -156,6 +155,19 @@ public class LocationWeatherService {
                 .collect(Collectors.toList());
 
         return new LocationWeatherResponseDto(locationWeatherInfos);
+    }
+
+    public String getCurrentTmp(double latitude, double longitude){
+        int[] convert = LocationConverter.latLonToGrid(latitude, longitude);
+
+        String temperature = null;  // int 값을 전달
+        try {
+            temperature = getCurrentTemperature(convert[0], convert[1]);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
+        return temperature;
     }
 
 }
