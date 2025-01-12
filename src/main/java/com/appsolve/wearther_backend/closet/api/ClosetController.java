@@ -6,8 +6,9 @@ import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
 import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
 import com.appsolve.wearther_backend.closet.dto.ClosetUpdateRequestDto;
-import com.appsolve.wearther_backend.closet.service.ClosetService;
+import com.appsolve.wearther_backend.closet.dto.ShoppingListDto;
 
+import com.appsolve.wearther_backend.closet.service.ClosetService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +53,11 @@ public class ClosetController {
     public ResponseEntity<?> getRecommendedCloset(@PathVariable("memberId") Long memberId) {
         // TODO : 인증 객체로부터 멤버를 가져옴
         MemberEntity member = memberService.getMemberById(memberId);
+        ClosetResponseDto recommendedCloset = getRecommendedClosetData(memberId);
+        return ApiResponse.success(HttpStatus.OK, recommendedCloset);
+    }
+
+    private ClosetResponseDto getRecommendedClosetData(Long memberId) {
         List<Long> tasteIds = memberService.getMemberTastes(memberId);
 
         Set<Long> uppers = new HashSet<>();
@@ -64,8 +70,30 @@ public class ClosetController {
             lowers.addAll(recommendedClothes.getLowers());
             others.addAll(recommendedClothes.getOthers());
         }
-        ClosetResponseDto result = new ClosetResponseDto(new ArrayList<>(uppers), new ArrayList<>(lowers), new ArrayList<>(others));
-        return ApiResponse.success(HttpStatus.OK, result);
+
+        return new ClosetResponseDto(new ArrayList<>(uppers), new ArrayList<>(lowers), new ArrayList<>(others));
+    }
+
+    @GetMapping("/shopping/{memberId}")
+    public ResponseEntity<?> getShoppingList(@PathVariable("memberId") Long memberId) {
+        // TODO : 인증 객체로부터 멤버를 가져옴
+        MemberEntity member = memberService.getMemberById(memberId);
+        List<Long> tasteIds = memberService.getMemberTastes(memberId);
+
+        List<ShoppingListDto> shoppingListDtos = new ArrayList<>();
+
+        if (tasteIds.isEmpty()) {
+            ShoppingListDto shoppingListDto = closetService.makeShoppingDtoifUserNoTaste(memberId);
+            shoppingListDtos.add(shoppingListDto);
+        }
+        else {
+            for (Long tasteId : tasteIds) {
+                System.out.println(tasteId);
+                ShoppingListDto shoppingListDto = closetService.makeShoppingDto(memberId, tasteId);
+                shoppingListDtos.add(shoppingListDto);
+            }
+        }
+        return ApiResponse.success(HttpStatus.OK, shoppingListDtos);
     }
 
     @PatchMapping("/update/{memberId}")

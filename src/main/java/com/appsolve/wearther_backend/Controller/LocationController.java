@@ -49,5 +49,11 @@ public class LocationController {
         return ApiResponse.success(HttpStatus.OK, dto);
     }
 
+    @GetMapping("/current-tmp/{latitude}/{longitude}")
+    public ResponseEntity<ApiResponse<String>> getCurrentTemp (@PathVariable Double latitude, @PathVariable Double longitude){
+        String currentTmp = locationWeatherService.getCurrentTmp(latitude, longitude);
+        return ApiResponse.success(HttpStatus.OK, currentTmp);
+    }
+
 
 }
