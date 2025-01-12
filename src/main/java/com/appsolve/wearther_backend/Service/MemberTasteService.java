@@ -16,10 +16,12 @@ public class MemberTasteService {
 
     private final MemberTasteRepository memberTasteRepository;
     private final MemberRepository memberRepository;
+    private final AuthService authService;
 
-    public MemberTasteService(MemberTasteRepository memberTasteRepository, MemberRepository memberRepository) {
+    public MemberTasteService(MemberTasteRepository memberTasteRepository,AuthService authService, MemberRepository memberRepository) {
         this.memberTasteRepository = memberTasteRepository;
         this.memberRepository = memberRepository;
+        this.authService = authService;
     }
 
     @Transactional
@@ -55,10 +57,11 @@ public class MemberTasteService {
     }
 
 
-    public void createMemberTastes(Long memberId, List<Long> tasteIds) {
-        MemberEntity member = memberRepository.findByMemberId(memberId);
-        for (Long tasteId : tasteIds) {
+    public void createMemberTastes(String token, List<Long> tasteIds) {
 
+        MemberEntity member = authService.getMemberEntityFromToken(token);
+        System.out.println("memberId"+member.getMemberId());
+        for (Long tasteId : tasteIds) {
 
             Taste taste = Taste.builder()
                     .id(tasteId)
