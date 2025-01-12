@@ -1,7 +1,11 @@
 package com.appsolve.wearther_backend.closet.service;
 
+import com.appsolve.wearther_backend.Entity.MemberEntity;
+import com.appsolve.wearther_backend.Repository.MemberRepository;
+import com.appsolve.wearther_backend.Service.AuthService;
 import com.appsolve.wearther_backend.Service.TasteService;
 import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
+import com.appsolve.wearther_backend.closet.dto.ClosetUpdateRequestDto;
 import com.appsolve.wearther_backend.closet.entity.Closet;
 import com.appsolve.wearther_backend.closet.entity.ClosetLower;
 import com.appsolve.wearther_backend.closet.entity.ClosetOther;
@@ -16,7 +20,6 @@ import com.appsolve.wearther_backend.init_data.entity.UpperWear;
 import com.appsolve.wearther_backend.init_data.repository.LowerWearRepository;
 import com.appsolve.wearther_backend.init_data.repository.OtherWearRepository;
 import com.appsolve.wearther_backend.init_data.repository.UpperWearRepository;
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,11 +41,14 @@ public class ClosetService {
     private final LowerWearRepository lowerWearRepository;  // LowerWearRepository 추가
     private final OtherWearRepository otherWearRepository;
     private final EntityManager entityManager;
+    private final MemberRepository memberRepository;
+    private final AuthService authService;
 
-    public ClosetService(ClosetUpperRepository closetUpperRepository, ClosetLowerRepository closetLowerRepository,
+    public ClosetService(AuthService authService,
+            ClosetUpperRepository closetUpperRepository, MemberRepository memberRepository, ClosetLowerRepository closetLowerRepository,
                          ClosetOtherRepository closetOtherRepository, ClosetRepository closetRepository,
                          UpperWearRepository upperWearRepository, LowerWearRepository lowerWearRepository,
-                         OtherWearRepository otherWearRepository,TasteService tasteService, EntityManager entityManager) {
+                         OtherWearRepository otherWearRepository, TasteService tasteService, EntityManager entityManager) {
         this.closetUpperRepository = closetUpperRepository;
         this.closetLowerRepository = closetLowerRepository;
         this.closetOtherRepository = closetOtherRepository;
@@ -52,6 +58,8 @@ public class ClosetService {
         this.closetRepository = closetRepository;
         this.tasteService = tasteService;
         this.entityManager = entityManager;
+        this.memberRepository = memberRepository;
+        this.authService = authService;
     }
 
     public ClosetResponseDto getOwnedClothes(Long memberId) {
@@ -152,5 +160,15 @@ public class ClosetService {
     private OtherWear findOtherWearById(Long otherId) {
         return otherWearRepository.findById(otherId)
                 .orElseThrow(() -> new RuntimeException("Other Wear not found"));
+    }
+
+    public void createCloset(ClosetUpdateRequestDto updateRequestDto,String token) {
+        MemberEntity member = authService.getMemberEntityFromToken(token);
+        Closet closet = Closet.createClosetByMember(member);
+        Closet save = closetRepository.save(closet);
+        member.setCloset(save);
+
+        addNewClothes(save, updateRequestDto.getUppers(), updateRequestDto.getLowers(), updateRequestDto.getOthers());
+        closetRepository.save(closet);
     }
 }
