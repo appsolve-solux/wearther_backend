@@ -31,19 +31,20 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             Long userId = jwtProvider.getUserIdFromToken(token);
             if (userId != null) {
                 MemberEntity member = memberRepository.findByMemberId(userId);
+                if (member!=null){
                 PrincipalDetails principalDetails = new PrincipalDetails(member);
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
                         principalDetails,
                         null,
                         principalDetails.getAuthorities()
+
                 );
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                chain.doFilter(request,response);
+                SecurityContextHolder.getContext().setAuthentication(authentication);}
             }
-        } else {
-            chain.doFilter(request, response);
         }
-    }}
+            chain.doFilter(request, response);
+    }
+}
 
 
 
