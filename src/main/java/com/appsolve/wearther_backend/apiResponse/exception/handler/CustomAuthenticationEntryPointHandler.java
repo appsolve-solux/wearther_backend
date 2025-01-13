@@ -8,13 +8,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
-//인증되지 않은 사용자, 토큰이 유효하지 않을 때 작동
+//로그인 하지 않은 사용자에게서 작동
 @Slf4j
 @Component
 public class CustomAuthenticationEntryPointHandler implements AuthenticationEntryPoint {
@@ -25,10 +27,7 @@ public class CustomAuthenticationEntryPointHandler implements AuthenticationEntr
         log.info("[CustomAuthenticationEntryPointHandler] :: {}", authException.getMessage());
         log.info("[CustomAuthenticationEntryPointHandler] :: {}", request.getRequestURL());
 
-        //지금 전부 여기서 걸리는데,,,,, 따로 구분 못하나?
-        log.info("[CustomAuthenticationEntryPointHandler] :: 토근 정보가 만료되었거나 존재하지 않음");
-
-        ErrorCode errorCode = ErrorCode.INVALID_TOKEN; // 기본적으로 INVALID_TOKEN으로 설정
+        ErrorCode errorCode = ErrorCode.INVALID_TOKEN;
 
         CustomException customException = new CustomException(errorCode);
 

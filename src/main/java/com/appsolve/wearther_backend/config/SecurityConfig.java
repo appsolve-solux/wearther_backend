@@ -2,6 +2,7 @@ package com.appsolve.wearther_backend.config;
 
 import com.appsolve.wearther_backend.apiResponse.exception.handler.CustomAccessDeniedHandler;
 import com.appsolve.wearther_backend.apiResponse.exception.handler.CustomAuthenticationEntryPointHandler;
+import com.appsolve.wearther_backend.apiResponse.exception.handler.JwtExceptionFilter;
 import com.appsolve.wearther_backend.config.jwt.JwtAuthorizationFilter;
 import com.appsolve.wearther_backend.config.jwt.JwtProvider;
 import com.appsolve.wearther_backend.Repository.MemberRepository;
@@ -34,6 +35,9 @@ public class SecurityConfig{
     private final JwtProvider jwtProvider;
     private final CustomAuthenticationEntryPointHandler customAuthenticationEntryPointHandler;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -56,8 +60,9 @@ public class SecurityConfig{
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용 안 함
                 .httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
                 .formLogin(AbstractHttpConfigurer::disable) // 폼 기반 로그인 비활성
-                .addFilterAfter(new JwtAuthorizationFilter(memberRepository,jwtProvider), UsernamePasswordAuthenticationFilter.class);
-        http.exceptionHandling(conf -> conf
+                .addFilterBefore(jwtExceptionFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthorizationFilter, JwtExceptionFilter.class)
+                .exceptionHandling(conf -> conf
                 .authenticationEntryPoint(customAuthenticationEntryPointHandler)
                 .accessDeniedHandler(customAccessDeniedHandler)
         );
