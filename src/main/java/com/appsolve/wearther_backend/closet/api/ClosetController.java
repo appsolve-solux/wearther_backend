@@ -29,7 +29,7 @@ public class ClosetController {
     private final MemberService memberService;
     private final AuthService authService;
 
-    public ClosetController(ClosetService closetService, MemberService memberService, TasteService tasteService, AuthService authService) {
+    public ClosetController(ClosetService closetService, MemberService memberService, AuthService authService) {
         this.closetService = closetService;
         this.memberService = memberService;
         this.authService = authService;
@@ -49,7 +49,7 @@ public class ClosetController {
         return ApiResponse.success(HttpStatus.OK, closetResponseDto);
     }
 
-    @GetMapping("/recommend")
+    @GetMapping("/recommend/{memberId}")
     public ResponseEntity<?> getRecommendedCloset(@RequestHeader("Authorization") String token) {
         MemberEntity member = authService.getMemberEntityFromToken(token);
         Long memberId = member.getMemberId();
@@ -64,13 +64,20 @@ public class ClosetController {
         Set<Long> lowers = new HashSet<>();
         Set<Long> others = new HashSet<>();
 
-        for (Long tasteId : tasteIds) {
-            ClosetResponseDto recommendedClothes = closetService.getClothesByTasteAndNotOwned(memberId, tasteId);
+        if (tasteIds.isEmpty()) {
+            ClosetResponseDto recommendedClothes = closetService.getClothesByNoTasteAndNotOwned(memberId);
             uppers.addAll(recommendedClothes.getUppers());
             lowers.addAll(recommendedClothes.getLowers());
             others.addAll(recommendedClothes.getOthers());
-        }
 
+        } else {
+            for (Long tasteId : tasteIds) {
+                ClosetResponseDto recommendedClothes = closetService.getClothesByTasteAndNotOwned(memberId, tasteId);
+                uppers.addAll(recommendedClothes.getUppers());
+                lowers.addAll(recommendedClothes.getLowers());
+                others.addAll(recommendedClothes.getOthers());
+            }
+        }
         return new ClosetResponseDto(new ArrayList<>(uppers), new ArrayList<>(lowers), new ArrayList<>(others));
     }
 

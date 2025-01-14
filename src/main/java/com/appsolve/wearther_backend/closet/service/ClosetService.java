@@ -3,7 +3,6 @@ package com.appsolve.wearther_backend.closet.service;
 import com.appsolve.wearther_backend.Entity.MemberEntity;
 import com.appsolve.wearther_backend.Repository.MemberRepository;
 import com.appsolve.wearther_backend.Service.AuthService;
-import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.Service.TasteService;
 import com.appsolve.wearther_backend.closet.ShoppingUrls;
 import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
@@ -81,6 +80,22 @@ public class ClosetService {
         List<Long> unownedUppers = filterUnownedClothes(ownedUppers, tasteUppers);
         List<Long> unownedLowers = filterUnownedClothes(ownedLowers, tasteLowers);
         List<Long> unownedOthers = filterUnownedClothes(ownedOthers, tasteOthers);
+
+        return new ClosetResponseDto(unownedUppers, unownedLowers, unownedOthers);
+    }
+
+    public ClosetResponseDto getClothesByNoTasteAndNotOwned(Long memberId) {
+        List<Long> ownedUppers = getOwnedClothesByType(memberId, "upper");
+        List<Long> ownedLowers = getOwnedClothesByType(memberId, "lower");
+        List<Long> ownedOthers = getOwnedClothesByType(memberId, "other");
+
+        List<Long> allUppers = upperWearRepository.findAllIds();
+        List<Long> allLowers = lowerWearRepository.findAllIds();
+        List<Long> allOthers = otherWearRepository.findAllIds();
+
+        List<Long> unownedUppers = filterUnownedClothes(ownedUppers, allUppers);
+        List<Long> unownedLowers = filterUnownedClothes(ownedLowers, allLowers);
+        List<Long> unownedOthers = filterUnownedClothes(ownedOthers, allOthers);
 
         return new ClosetResponseDto(unownedUppers, unownedLowers, unownedOthers);
     }
