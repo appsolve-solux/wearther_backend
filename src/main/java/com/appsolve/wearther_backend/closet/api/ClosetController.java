@@ -23,7 +23,7 @@ import java.util.Set;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/closet")
+@RequestMapping("/closet")
 public class ClosetController {
     private final ClosetService closetService;
     private final MemberService memberService;
@@ -35,13 +35,13 @@ public class ClosetController {
         this.authService = authService;
     }
 
-    @PostMapping("createCloset")
+    @PostMapping("/createCloset")
     public  ResponseEntity<?> createClosetByMember(@RequestHeader("Authorization") String token, @RequestBody ClosetUpdateRequestDto updateRequestDto) {
         closetService.createCloset(updateRequestDto, token);
         return ApiResponse.success(HttpStatus.CREATED,"옷장 만들었습니다.");
     }
 
-    @GetMapping("/clothes/{memberId}")
+    @GetMapping("/clothes")
     public ResponseEntity<?> getMemberCloset(@RequestHeader("Authorization") String token) {
         MemberEntity member = authService.getMemberEntityFromToken(token);
         Long memberId = member.getMemberId();
@@ -49,7 +49,7 @@ public class ClosetController {
         return ApiResponse.success(HttpStatus.OK, closetResponseDto);
     }
 
-    @GetMapping("/recommend/{memberId}")
+    @GetMapping("/recommend")
     public ResponseEntity<?> getRecommendedCloset(@RequestHeader("Authorization") String token) {
         MemberEntity member = authService.getMemberEntityFromToken(token);
         Long memberId = member.getMemberId();
@@ -74,7 +74,7 @@ public class ClosetController {
         return new ClosetResponseDto(new ArrayList<>(uppers), new ArrayList<>(lowers), new ArrayList<>(others));
     }
 
-    @GetMapping("/shopping/{memberId}")
+    @GetMapping("/shopping")
     public ResponseEntity<?> getShoppingList(@RequestHeader("Authorization") String token) {
         MemberEntity member = authService.getMemberEntityFromToken(token);
         Long memberId = member.getMemberId();
