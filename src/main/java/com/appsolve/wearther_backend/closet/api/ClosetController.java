@@ -1,6 +1,7 @@
 package com.appsolve.wearther_backend.closet.api;
 
 import com.appsolve.wearther_backend.Entity.MemberEntity;
+import com.appsolve.wearther_backend.Service.AuthService;
 import com.appsolve.wearther_backend.Service.TasteService;
 import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
@@ -26,10 +27,12 @@ import java.util.Set;
 public class ClosetController {
     private final ClosetService closetService;
     private final MemberService memberService;
+    private final AuthService authService;
 
-    public ClosetController(ClosetService closetService, MemberService memberService, TasteService tasteService) {
+    public ClosetController(ClosetService closetService, MemberService memberService, TasteService tasteService, AuthService authService) {
         this.closetService = closetService;
         this.memberService = memberService;
+        this.authService = authService;
     }
 
     @PostMapping("createCloset")
@@ -38,21 +41,18 @@ public class ClosetController {
         return ApiResponse.success(HttpStatus.CREATED,"옷장 만들었습니다.");
     }
 
-    // TODO : 사용자 로그인 여부 체크 로직 추가 필요
-    // TODO : 테스트 위해 인증객체 대신 일단 아이디를 변수로 받아옴
-
     @GetMapping("/clothes/{memberId}")
-    public ResponseEntity<?> getMemberCloset(@PathVariable("memberId") Long memberId) {
-        // TODO : 인증 객체로부터 멤버를 가져옴
-        MemberEntity member = memberService.getMemberById(memberId);
+    public ResponseEntity<?> getMemberCloset(@RequestHeader("Authorization") String token) {
+        MemberEntity member = authService.getMemberEntityFromToken(token);
+        Long memberId = member.getMemberId();
         ClosetResponseDto closetResponseDto = closetService.getOwnedClothes(memberId);
         return ApiResponse.success(HttpStatus.OK, closetResponseDto);
     }
 
     @GetMapping("/recommend/{memberId}")
-    public ResponseEntity<?> getRecommendedCloset(@PathVariable("memberId") Long memberId) {
-        // TODO : 인증 객체로부터 멤버를 가져옴
-        MemberEntity member = memberService.getMemberById(memberId);
+    public ResponseEntity<?> getRecommendedCloset(@RequestHeader("Authorization") String token) {
+        MemberEntity member = authService.getMemberEntityFromToken(token);
+        Long memberId = member.getMemberId();
         ClosetResponseDto recommendedCloset = getRecommendedClosetData(memberId);
         return ApiResponse.success(HttpStatus.OK, recommendedCloset);
     }
@@ -75,9 +75,9 @@ public class ClosetController {
     }
 
     @GetMapping("/shopping/{memberId}")
-    public ResponseEntity<?> getShoppingList(@PathVariable("memberId") Long memberId) {
-        // TODO : 인증 객체로부터 멤버를 가져옴
-        MemberEntity member = memberService.getMemberById(memberId);
+    public ResponseEntity<?> getShoppingList(@RequestHeader("Authorization") String token) {
+        MemberEntity member = authService.getMemberEntityFromToken(token);
+        Long memberId = member.getMemberId();
         List<Long> tasteIds = memberService.getMemberTastes(memberId);
 
         List<ShoppingListDto> shoppingListDtos = new ArrayList<>();
