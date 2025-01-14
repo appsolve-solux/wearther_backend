@@ -28,9 +28,12 @@ public class CustomAuthenticationEntryPointHandler implements AuthenticationEntr
         log.info("[CustomAuthenticationEntryPointHandler] :: {}", request.getRequestURL());
 
         ErrorCode errorCode = ErrorCode.INVALID_TOKEN;
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader == null || authorizationHeader.trim().isEmpty()) {
+            errorCode = ErrorCode.MISSING_TOKEN;
+        }
 
         CustomException customException = new CustomException(errorCode);
-
         ApiResponse<Object> apiResponse = ApiResponse.fail(customException, null);
 
         response.setStatus(errorCode.getHttpStatus().value());
