@@ -3,9 +3,11 @@ package com.appsolve.wearther_backend.Entity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.Date;
 
+
+@Setter
 @NoArgsConstructor
 @Entity
 public class RefreshToken {
@@ -17,13 +19,12 @@ public class RefreshToken {
     @JoinColumn(name = "member_id")
     private MemberEntity member;
     private String refreshToken;
-    private Date validity;
+
 
     @Builder
-    public RefreshToken(MemberEntity member, String refreshToken, Date validity) {
+    public RefreshToken(MemberEntity member, String refreshToken) {
         this.member = member;
         this.refreshToken = refreshToken;
-        this.validity = validity;
     }
 
 }
