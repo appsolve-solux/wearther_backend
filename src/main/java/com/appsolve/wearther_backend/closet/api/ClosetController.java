@@ -5,6 +5,7 @@ import com.appsolve.wearther_backend.Service.AuthService;
 import com.appsolve.wearther_backend.Service.TasteService;
 import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
+import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
 import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
 import com.appsolve.wearther_backend.closet.dto.ClosetUpdateRequestDto;
 import com.appsolve.wearther_backend.closet.dto.ShoppingListDto;
@@ -19,6 +20,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static com.appsolve.wearther_backend.apiResponse.exception.ErrorCode.CLOTH_NOT_FOUND;
+import static com.appsolve.wearther_backend.apiResponse.exception.ErrorCode.TASTE_NOT_FOUND;
 
 
 @Slf4j
@@ -49,7 +53,7 @@ public class ClosetController {
         return ApiResponse.success(HttpStatus.OK, closetResponseDto);
     }
 
-    @GetMapping("/recommend/{memberId}")
+    @GetMapping("/recommend")
     public ResponseEntity<?> getRecommendedCloset(@RequestHeader("Authorization") String token) {
         MemberEntity member = authService.getMemberEntityFromToken(token);
         Long memberId = member.getMemberId();
@@ -66,13 +70,18 @@ public class ClosetController {
 
         if (tasteIds.isEmpty()) {
             ClosetResponseDto recommendedClothes = closetService.getClothesByNoTasteAndNotOwned(memberId);
+            if (recommendedClothes == null) {
+                throw new CustomException(CLOTH_NOT_FOUND);
+            }
             uppers.addAll(recommendedClothes.getUppers());
             lowers.addAll(recommendedClothes.getLowers());
             others.addAll(recommendedClothes.getOthers());
-
         } else {
             for (Long tasteId : tasteIds) {
                 ClosetResponseDto recommendedClothes = closetService.getClothesByTasteAndNotOwned(memberId, tasteId);
+                if (recommendedClothes == null) {
+                    throw new CustomException(CLOTH_NOT_FOUND);
+                }
                 uppers.addAll(recommendedClothes.getUppers());
                 lowers.addAll(recommendedClothes.getLowers());
                 others.addAll(recommendedClothes.getOthers());
@@ -94,10 +103,17 @@ public class ClosetController {
             shoppingListDtos.add(shoppingListDto);
         }
         else {
-            for (Long tasteId : tasteIds) {
-                System.out.println(tasteId);
-                ShoppingListDto shoppingListDto = closetService.makeShoppingDto(memberId, tasteId);
-                shoppingListDtos.add(shoppingListDto);
+            try {
+                for (Long tasteId : tasteIds) {
+                    ShoppingListDto shoppingListDto = closetService.makeShoppingDto(memberId, tasteId);
+
+                    if (shoppingListDto == null)
+                        throw new IllegalArgumentException("유효하지 않은 tasteId: " + tasteId);
+
+                    shoppingListDtos.add(shoppingListDto);
+                }
+            } catch (Exception e) {
+                throw new CustomException(TASTE_NOT_FOUND);
             }
         }
         return ApiResponse.success(HttpStatus.OK, shoppingListDtos);
@@ -110,6 +126,4 @@ public class ClosetController {
         closetService.updateUserCloset(memberId, updateRequestDto.getUppers(), updateRequestDto.getLowers(), updateRequestDto.getOthers());
         return ApiResponse.success(HttpStatus.OK, updateRequestDto);
     }
-
-
 }

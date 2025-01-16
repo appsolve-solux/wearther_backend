@@ -30,7 +30,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.appsolve.wearther_backend.apiResponse.exception.ErrorCode.CLOTH_TYPE_NOT_FOUND;
+import static com.appsolve.wearther_backend.apiResponse.exception.ErrorCode.*;
 
 @Service
 @Transactional
@@ -63,16 +63,16 @@ public class ClosetService {
         this.memberService = memberService;
     }
 
-    public ClosetResponseDto getOwnedClothes(Long memberId) {
-        return makeUserOwnClothesList(memberId);
-    }
-
     public ClosetResponseDto makeUserOwnClothesList(Long memberId) {
         List<Long> ownedUppers = getOwnedClothesByType(memberId, "upper");
         List<Long> ownedLowers = getOwnedClothesByType(memberId, "lower");
         List<Long> ownedOthers = getOwnedClothesByType(memberId, "other");
 
         return new ClosetResponseDto(ownedUppers, ownedLowers, ownedOthers);
+    }
+
+    public ClosetResponseDto getOwnedClothes(Long memberId) {
+        return makeUserOwnClothesList(memberId);
     }
 
     public ClosetResponseDto makeUserNotOwnClothesList(Long memberId, ClosetResponseDto tastesOwns) {
@@ -85,6 +85,12 @@ public class ClosetService {
         return new ClosetResponseDto(unownedUppers, unownedLowers, unownedOthers);
     }
 
+    private List<Long> filterUnownedClothes(List<Long> ownedClothes, List<Long> tasteClothes) {
+        return tasteClothes.stream()
+                .filter(clothId -> !ownedClothes.contains(clothId))
+                .collect(Collectors.toList());
+    }
+
     public ClosetResponseDto getClothesByTasteAndNotOwned(Long memberId, Long tasteId) {
         List<Long> tasteUppers = tasteService.getClothesByTasteId(tasteId, "upper");
         List<Long> tasteLowers = tasteService.getClothesByTasteId(tasteId, "lower");
@@ -94,7 +100,7 @@ public class ClosetService {
         return makeUserNotOwnClothesList(memberId, tastesOwns);
     }
 
-    public ClosetResponseDto getClothesByNoTasteAndNotOwned(Long memberId) { // 취향이 없는 경우
+    public ClosetResponseDto getClothesByNoTasteAndNotOwned(Long memberId) {
         List<Long> allUppers = upperWearRepository.findAllIds();
         List<Long> allLowers = lowerWearRepository.findAllIds();
         List<Long> allOthers = otherWearRepository.findAllIds();
@@ -106,32 +112,37 @@ public class ClosetService {
     private List<Long> getOwnedClothesByType(Long memberId, String clothingType) {
         switch (clothingType) {
             case "upper":
-                return closetUpperRepository.findByClosetId(memberId)
-                        .stream()
+                List<ClosetUpper> upperClothes = closetUpperRepository.findByClosetId(memberId);
+                if (upperClothes == null) {
+                    throw new CustomException(CLOSET_NOT_FOUND);
+                }
+                return upperClothes.stream()
                         .map(closetUpper -> closetUpper.getUpperWear().getId())
+                        .filter(Objects::nonNull)
                         .collect(Collectors.toList());
 
             case "lower":
-                return closetLowerRepository.findByClosetId(memberId)
-                        .stream()
+                List<ClosetLower> lowerClothes = closetLowerRepository.findByClosetId(memberId);
+                if (lowerClothes == null) {
+                    throw new CustomException(CLOSET_NOT_FOUND);
+                }
+                return lowerClothes.stream()
                         .map(closetLower -> closetLower.getLowerWear().getId())
+                        .filter(Objects::nonNull)
                         .collect(Collectors.toList());
 
             case "other":
-                return closetOtherRepository.findByClosetId(memberId)
-                        .stream()
+                List<ClosetOther> otherClothes = closetOtherRepository.findByClosetId(memberId);
+                if (otherClothes == null) {
+                    throw new CustomException(CLOSET_NOT_FOUND);
+                }
+                return otherClothes.stream()
                         .map(closetOther -> closetOther.getOtherWear().getId())
+                        .filter(Objects::nonNull)
                         .collect(Collectors.toList());
-
             default:
-                return Collections.emptyList();
+                throw new CustomException(CLOSET_NOT_FOUND);
         }
-    }
-
-    private List<Long> filterUnownedClothes(List<Long> ownedClothes, List<Long> tasteClothes) {
-        return tasteClothes.stream()
-                .filter(clothId -> !ownedClothes.contains(clothId))
-                .collect(Collectors.toList());
     }
 
     public ShoppingListDto makeShoppingDto(Long memberId, Long tasteId) {
@@ -173,16 +184,22 @@ public class ClosetService {
 
     private List<ShoppingRecommendDto> convertToRecommendDto(List<Long> clothIds, String category) {
         Map<Long, List<Pair<String, String>>> infoMap = getInfoMapByCategory(category);
+
         return clothIds.stream()
                 .flatMap(clothId -> {
                     List<Pair<String, String>> infoList = infoMap.get(clothId);
-                    if (infoList == null) return Stream.empty();
+
+                    if (infoList == null) {
+                        throw new CustomException(CLOTH_NOT_FOUND);
+                    }
+
                     return infoList.stream().map(info ->
                             new ShoppingRecommendDto(category, clothId, getProductName(clothId, category), info.getLeft(), info.getRight())
                     );
                 })
                 .collect(Collectors.toList());
     }
+
 
     private Map<Long, List<Pair<String, String>>> getInfoMapByCategory(String category) {
         return switch (category) {
