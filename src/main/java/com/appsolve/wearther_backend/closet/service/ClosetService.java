@@ -163,12 +163,11 @@ public class ClosetService {
     }
 
     private String getProductName(Long clothId, String category) {
-        String result = "";
         return switch (category) {
             case "upper" -> upperWearRepository.findNameById(clothId);
             case "lower" -> lowerWearRepository.findNameById(clothId);
             case "other" -> otherWearRepository.findNameById(clothId);
-            default -> result; // 예외 던지기
+            default -> throw new CustomException(CLOTH_TYPE_NOT_FOUND);
         };
     }
 
@@ -190,7 +189,7 @@ public class ClosetService {
             case "upper" -> ShoppingUrls.UPPER_WEAR_INFO;
             case "lower" -> ShoppingUrls.LOWER_WEAR_INFO;
             case "other" -> ShoppingUrls.OTHER_WEAR_INFO;
-            default -> Collections.emptyMap();
+            default -> throw new CustomException(CLOTH_TYPE_NOT_FOUND);
         };
     }
 
