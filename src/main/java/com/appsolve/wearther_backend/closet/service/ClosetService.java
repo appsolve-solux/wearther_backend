@@ -3,16 +3,15 @@ package com.appsolve.wearther_backend.closet.service;
 import com.appsolve.wearther_backend.Entity.MemberEntity;
 import com.appsolve.wearther_backend.Repository.MemberRepository;
 import com.appsolve.wearther_backend.Service.AuthService;
+import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.Service.TasteService;
+import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
 import com.appsolve.wearther_backend.closet.ShoppingUrls;
-import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
-import com.appsolve.wearther_backend.closet.dto.ClosetUpdateRequestDto;
+import com.appsolve.wearther_backend.closet.dto.*;
 import com.appsolve.wearther_backend.closet.entity.Closet;
 import com.appsolve.wearther_backend.closet.entity.ClosetLower;
 import com.appsolve.wearther_backend.closet.entity.ClosetOther;
 import com.appsolve.wearther_backend.closet.entity.ClosetUpper;
-import com.appsolve.wearther_backend.closet.dto.ShoppingListDto;
-import com.appsolve.wearther_backend.closet.dto.ShoppingRecommendDto;
 import com.appsolve.wearther_backend.closet.repository.ClosetLowerRepository;
 import com.appsolve.wearther_backend.closet.repository.ClosetOtherRepository;
 import com.appsolve.wearther_backend.closet.repository.ClosetRepository;
@@ -31,6 +30,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.appsolve.wearther_backend.apiResponse.exception.ErrorCode.CLOTH_TYPE_NOT_FOUND;
+
 @Service
 @Transactional
 public class ClosetService {
@@ -43,12 +44,13 @@ public class ClosetService {
     private final ClosetRepository closetRepository;
     private final TasteService tasteService;
     private final AuthService authService;
+    private final MemberService memberService;
 
     public ClosetService(AuthService authService,
-            ClosetUpperRepository closetUpperRepository, MemberRepository memberRepository, ClosetLowerRepository closetLowerRepository,
+                         ClosetUpperRepository closetUpperRepository, MemberRepository memberRepository, ClosetLowerRepository closetLowerRepository,
                          ClosetOtherRepository closetOtherRepository, ClosetRepository closetRepository,
                          UpperWearRepository upperWearRepository, LowerWearRepository lowerWearRepository,
-                         OtherWearRepository otherWearRepository, TasteService tasteService) {
+                         OtherWearRepository otherWearRepository, TasteService tasteService, MemberService memberService) {
         this.closetUpperRepository = closetUpperRepository;
         this.closetLowerRepository = closetLowerRepository;
         this.closetOtherRepository = closetOtherRepository;
@@ -58,9 +60,14 @@ public class ClosetService {
         this.closetRepository = closetRepository;
         this.tasteService = tasteService;
         this.authService = authService;
+        this.memberService = memberService;
     }
 
     public ClosetResponseDto getOwnedClothes(Long memberId) {
+        return makeUserOwnClothesList(memberId);
+    }
+
+    public ClosetResponseDto makeUserOwnClothesList(Long memberId) {
         List<Long> ownedUppers = getOwnedClothesByType(memberId, "upper");
         List<Long> ownedLowers = getOwnedClothesByType(memberId, "lower");
         List<Long> ownedOthers = getOwnedClothesByType(memberId, "other");
@@ -68,36 +75,32 @@ public class ClosetService {
         return new ClosetResponseDto(ownedUppers, ownedLowers, ownedOthers);
     }
 
-    public ClosetResponseDto getClothesByTasteAndNotOwned(Long memberId, Long tasteId) {
-        List<Long> ownedUppers = getOwnedClothesByType(memberId, "upper");
-        List<Long> ownedLowers = getOwnedClothesByType(memberId, "lower");
-        List<Long> ownedOthers = getOwnedClothesByType(memberId, "other");
+    public ClosetResponseDto makeUserNotOwnClothesList(Long memberId, ClosetResponseDto tastesOwns) {
+        ClosetResponseDto ownClothes = makeUserOwnClothesList(memberId);
 
-        List<Long> tasteUppers = tasteService.getClothesByTasteId(tasteId, "upper");
-        List<Long> tasteLowers = tasteService.getClothesByTasteId(tasteId, "lower");
-        List<Long> tasteOthers = tasteService.getClothesByTasteId(tasteId, "other");
-
-        List<Long> unownedUppers = filterUnownedClothes(ownedUppers, tasteUppers);
-        List<Long> unownedLowers = filterUnownedClothes(ownedLowers, tasteLowers);
-        List<Long> unownedOthers = filterUnownedClothes(ownedOthers, tasteOthers);
+        List<Long> unownedUppers = filterUnownedClothes(ownClothes.getUppers(), tastesOwns.getUppers());
+        List<Long> unownedLowers = filterUnownedClothes(ownClothes.getLowers(), tastesOwns.getLowers());
+        List<Long> unownedOthers = filterUnownedClothes(ownClothes.getOthers(), tastesOwns.getOthers());
 
         return new ClosetResponseDto(unownedUppers, unownedLowers, unownedOthers);
     }
 
-    public ClosetResponseDto getClothesByNoTasteAndNotOwned(Long memberId) {
-        List<Long> ownedUppers = getOwnedClothesByType(memberId, "upper");
-        List<Long> ownedLowers = getOwnedClothesByType(memberId, "lower");
-        List<Long> ownedOthers = getOwnedClothesByType(memberId, "other");
+    public ClosetResponseDto getClothesByTasteAndNotOwned(Long memberId, Long tasteId) {
+        List<Long> tasteUppers = tasteService.getClothesByTasteId(tasteId, "upper");
+        List<Long> tasteLowers = tasteService.getClothesByTasteId(tasteId, "lower");
+        List<Long> tasteOthers = tasteService.getClothesByTasteId(tasteId, "other");
 
+        ClosetResponseDto tastesOwns = new ClosetResponseDto(tasteUppers, tasteLowers, tasteOthers);
+        return makeUserNotOwnClothesList(memberId, tastesOwns);
+    }
+
+    public ClosetResponseDto getClothesByNoTasteAndNotOwned(Long memberId) { // 취향이 없는 경우
         List<Long> allUppers = upperWearRepository.findAllIds();
         List<Long> allLowers = lowerWearRepository.findAllIds();
         List<Long> allOthers = otherWearRepository.findAllIds();
 
-        List<Long> unownedUppers = filterUnownedClothes(ownedUppers, allUppers);
-        List<Long> unownedLowers = filterUnownedClothes(ownedLowers, allLowers);
-        List<Long> unownedOthers = filterUnownedClothes(ownedOthers, allOthers);
-
-        return new ClosetResponseDto(unownedUppers, unownedLowers, unownedOthers);
+        ClosetResponseDto tastesOwns = new ClosetResponseDto(allUppers, allLowers, allOthers);
+        return makeUserNotOwnClothesList(memberId, tastesOwns);
     }
 
     private List<Long> getOwnedClothesByType(Long memberId, String clothingType) {
@@ -132,22 +135,12 @@ public class ClosetService {
     }
 
     public ShoppingListDto makeShoppingDto(Long memberId, Long tasteId) {
-        List<Long> ownedUppers = getOwnedClothesByType(memberId, "upper");
-        List<Long> ownedLowers = getOwnedClothesByType(memberId, "lower");
-        List<Long> ownedOthers = getOwnedClothesByType(memberId, "other");
-
-        List<Long> tasteUppers = tasteService.getClothesByTasteId(tasteId, "upper");
-        List<Long> tasteLowers = tasteService.getClothesByTasteId(tasteId, "lower");
-        List<Long> tasteOthers = tasteService.getClothesByTasteId(tasteId, "other");
-
-        List<Long> unownedUppers = filterUnownedClothes(ownedUppers, tasteUppers);
-        List<Long> unownedLowers = filterUnownedClothes(ownedLowers, tasteLowers);
-        List<Long> unownedOthers = filterUnownedClothes(ownedOthers, tasteOthers);
+        ClosetResponseDto clothesByTasteAndNotOwned = getClothesByTasteAndNotOwned(memberId, tasteId);
 
         List<ShoppingRecommendDto> recommendList = new ArrayList<>();
-        recommendList.addAll(convertToRecommendDto(unownedUppers, "upper"));
-        recommendList.addAll(convertToRecommendDto(unownedLowers, "lower"));
-        recommendList.addAll(convertToRecommendDto(unownedOthers, "other"));
+        recommendList.addAll(convertToRecommendDto(clothesByTasteAndNotOwned.getUppers(), "upper"));
+        recommendList.addAll(convertToRecommendDto(clothesByTasteAndNotOwned.getLowers(), "lower"));
+        recommendList.addAll(convertToRecommendDto(clothesByTasteAndNotOwned.getOthers(), "other"));
 
         return ShoppingListDto.builder()
                 .tasteId(tasteId)
@@ -156,22 +149,12 @@ public class ClosetService {
     }
 
     public ShoppingListDto makeShoppingDtoifUserNoTaste(Long memberId) {
-        List<Long> ownedUppers = getOwnedClothesByType(memberId, "upper");
-        List<Long> ownedLowers = getOwnedClothesByType(memberId, "lower");
-        List<Long> ownedOthers = getOwnedClothesByType(memberId, "other");
-
-        List<Long> tasteUppers =  upperWearRepository.findAllIds();
-        List<Long> tasteLowers =  lowerWearRepository.findAllIds();
-        List<Long> tasteOthers = otherWearRepository.findAllIds();
-
-        List<Long> unownedUppers = filterUnownedClothes(ownedUppers, tasteUppers);
-        List<Long> unownedLowers = filterUnownedClothes(ownedLowers, tasteLowers);
-        List<Long> unownedOthers = filterUnownedClothes(ownedOthers, tasteOthers);
+        ClosetResponseDto clothesByNoTasteAndNotOwned = getClothesByNoTasteAndNotOwned(memberId);
 
         List<ShoppingRecommendDto> recommendList = new ArrayList<>();
-        recommendList.addAll(convertToRecommendDto(unownedUppers, "upper"));
-        recommendList.addAll(convertToRecommendDto(unownedLowers, "lower"));
-        recommendList.addAll(convertToRecommendDto(unownedOthers, "other"));
+        recommendList.addAll(convertToRecommendDto(clothesByNoTasteAndNotOwned.getUppers(), "upper"));
+        recommendList.addAll(convertToRecommendDto(clothesByNoTasteAndNotOwned.getLowers(), "lower"));
+        recommendList.addAll(convertToRecommendDto(clothesByNoTasteAndNotOwned.getOthers(), "other"));
 
         return ShoppingListDto.builder()
                 .tasteId(0L)
