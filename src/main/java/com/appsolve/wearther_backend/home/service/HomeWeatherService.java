@@ -46,7 +46,12 @@ public class HomeWeatherService {
 
         RestTemplate restTemplate = new RestTemplate(messageConverters);
 
-        LocalDateTime now = adjustBaseDateTime();
+        LocalDateTime now = LocalDateTime.now();
+
+        if (now.getHour() < 2 || (now.getHour() == 2 && now.getMinute() <= 30)) {
+            now = now.minusDays(1);
+        }
+
         String baseDate = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String baseTime = determineBaseTime(now);
 
@@ -62,16 +67,7 @@ public class HomeWeatherService {
         return parseWeatherResponse(responseBody);
     }
 
-    private LocalDateTime adjustBaseDateTime() {
-        LocalDateTime now = LocalDateTime.now();
-        int hour = now.getHour();
-        int minute = now.getMinute();
-        if (hour < 2 || (hour == 2 && minute <= 30)) {
-            now = now.minusDays(1);
-        }
-        return now;
-    }
-
+    // baseTime 설정
     private String determineBaseTime(LocalDateTime now) {
         int hour = now.getHour();
         int minute = now.getMinute();
@@ -96,6 +92,7 @@ public class HomeWeatherService {
         }
     }
 
+    // 날씨 데이터 파싱
     private WeatherResponseDto parseWeatherResponse(String responseBody) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -118,7 +115,7 @@ public class HomeWeatherService {
             int adjustedHour = now.getMinute() >= 30 ? currentHour + 1 : currentHour;
             formatHour = String.format("%02d00", adjustedHour);
 
-            boolean foundStart = false; // 시작점을 찾았는지 여부
+            boolean foundStart = false;
 
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);
@@ -138,16 +135,14 @@ public class HomeWeatherService {
                         humidity = fcstValue + "%";
                     }
 
-                    // 시간 비교하여 다음 7개의 데이터 수집
                     if (hourlyTemp.size() < 7 || hourlySky.size() < 7) {
-                        if (!foundStart && Integer.parseInt(fcstTime) >= adjustedHour*100) {
-                            foundStart = true; // 시작점 찾음
+                        if (!foundStart && Integer.parseInt(fcstTime) >= currentHour * 100) {
+                            foundStart = true;
                         }
                         if (foundStart) {
                             if ("TMP".equals(category)) {
                                 hourlyTemp.add(fcstValue + "°C");
                             } else if ("SKY".equals(category)) {
-                                // 하늘 상태 코드 변환
                                 String skyDescription = switch (fcstValue) {
                                     case "1" -> "맑음";
                                     case "2" -> "구름 조금";
@@ -162,9 +157,9 @@ public class HomeWeatherService {
                 }
             }
 
-            // 모든 데이터를 WeatherResponseDto에 매핑
+            // 데이터 WeatherResponseDto에 매핑
             return new WeatherResponseDto(
-                    hourlyTemp.isEmpty() ? "N/A" : hourlyTemp.get(0), // 현재온도
+                    hourlyTemp.isEmpty() ? "N/A" : hourlyTemp.get(0),
                     temperatureMin != null ? temperatureMin : "N/A",
                     temperatureMax != null ? temperatureMax : "N/A",
                     humidity != null ? humidity : "N/A",
@@ -182,11 +177,9 @@ public class HomeWeatherService {
         int[] convert = LocationConverter.latLonToGrid(latitude, longitude);
 
         try {
-            // getCurrentWeather 메서드가 WeatherResponseDto를 반환하므로 그대로 사용
             return getCurrentWeather(convert[0], convert[1]);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
-
 }
