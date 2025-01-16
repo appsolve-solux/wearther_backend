@@ -1,4 +1,4 @@
-package com.appsolve.wearther_backend.Repository;
+package com.appsolve.wearther_backend.auth.Repository;
 
 import com.appsolve.wearther_backend.Entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,4 +1,4 @@
-package com.appsolve.wearther_backend.config.auth;
+package com.appsolve.wearther_backend.auth;
 
 import com.appsolve.wearther_backend.Entity.MemberEntity;
 import com.appsolve.wearther_backend.Repository.MemberRepository;

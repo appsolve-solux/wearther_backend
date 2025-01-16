@@ -1,4 +1,4 @@
-package com.appsolve.wearther_backend.config.jwt;
+package com.appsolve.wearther_backend.auth.jwt;
 
 import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
 import com.appsolve.wearther_backend.apiResponse.exception.ErrorCode;

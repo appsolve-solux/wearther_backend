@@ -33,6 +33,8 @@ public class MemberEntity {
     @JoinColumn(name = "closet_id")
     private Closet closet;
 
+
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberTaste> memberTastes = new ArrayList<>();
 
