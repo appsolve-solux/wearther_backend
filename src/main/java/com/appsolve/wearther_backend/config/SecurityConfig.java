@@ -49,8 +49,8 @@ public class SecurityConfig{
     public SecurityFilterChain SecurityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**","/error","member/refresh").permitAll()
-                        .requestMatchers("member/signUp", "member/login", "member/duplication-check").permitAll()
+                        .requestMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**","/error").permitAll()
+                        .requestMatchers("/member/signUp", "/auth/login", "/member/duplication-check", "/auth/refresh").permitAll()
                         .requestMatchers("/images/**", "/js/**", "/webjars/**").permitAll()
                         .anyRequest().authenticated()
                 )

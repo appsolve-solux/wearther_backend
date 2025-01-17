@@ -63,26 +63,28 @@ public class JwtProvider {
     }
 
 
-    public boolean validateToken(final String token) {
+    public void checkRefreshToken(final String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
-            return true;
         } catch (SecurityException e) {
-            log.warn("Invalid JWT signature: {}", e.getMessage());
+            log.warn("Invalid JWT signature: {}", e.getMessage()); // 서명 오류 로그
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         } catch (MalformedJwtException e) {
-            log.warn("Invalid JWT token: {}", e.getMessage());
+            log.warn("Malformed JWT token: {}", e.getMessage()); // 형식 오류 로그
+            throw new CustomException(ErrorCode.JWT_MALFORMED);
         } catch (ExpiredJwtException e) {
-            log.warn("JWT token is expired: {}", e.getMessage());
+            log.warn("JWT token is expired: {}", e.getMessage()); // 만료 로그
+            throw new CustomException(ErrorCode.TOKEN_EXPIRED);
         } catch (UnsupportedJwtException e) {
-            log.warn("JWT token is unsupported: {}", e.getMessage());
+            log.warn("Unsupported JWT token: {}", e.getMessage()); // 미지원 토큰 로그
+            throw new CustomException(ErrorCode.UNSUPPORTED_JWT);
         } catch (IllegalArgumentException e) {
-            log.warn("JWT claims string is empty: {}", e.getMessage());
+            log.warn("JWT claims string is empty: {}", e.getMessage()); // 비어 있는 토큰 로그
+            throw new CustomException(ErrorCode.EMPTY_JWT);
         }
-        return  false;
-
 
     }
 

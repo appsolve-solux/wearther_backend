@@ -1,5 +1,6 @@
 package com.appsolve.wearther_backend.Entity;
 
+import com.appsolve.wearther_backend.auth.Entity.RefreshToken;
 import com.appsolve.wearther_backend.closet.entity.Closet;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -33,7 +34,8 @@ public class MemberEntity {
     @JoinColumn(name = "closet_id")
     private Closet closet;
 
-
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RefreshToken> refreshTokens = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberTaste> memberTastes = new ArrayList<>();

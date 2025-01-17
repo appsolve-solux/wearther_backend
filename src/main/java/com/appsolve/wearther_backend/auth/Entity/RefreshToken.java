@@ -1,5 +1,6 @@
-package com.appsolve.wearther_backend.Entity;
+package com.appsolve.wearther_backend.auth.Entity;
 
+import com.appsolve.wearther_backend.Entity.MemberEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -15,16 +16,20 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    private String deviceId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private MemberEntity member;
+
     private String refreshToken;
 
 
     @Builder
-    public RefreshToken(MemberEntity member, String refreshToken) {
+    public RefreshToken(MemberEntity member, String refreshToken,String deviceId) {
         this.member = member;
         this.refreshToken = refreshToken;
+        this.deviceId = deviceId;
     }
 
 }
