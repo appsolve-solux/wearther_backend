@@ -19,12 +19,6 @@ public class MemberTasteController {
         this.memberTasteService = memberTasteService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<ApiResponse<List<Long>>> createTastes(@RequestHeader("Authorization") String token, @RequestBody List<Long> tasteIds) {
-        memberTasteService.createMemberTastes(token, tasteIds);
-        return ApiResponse.success(HttpStatus.OK, tasteIds);
-    }
-
     @PatchMapping("/update/{memberId}")
     public ResponseEntity<ApiResponse<List<Long>>> updateTastes(@PathVariable Long memberId, @RequestBody List<Long> tasteIds) {
         memberTasteService.updateMemberTastes(memberId, tasteIds);

@@ -9,6 +9,7 @@ import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
 import com.appsolve.wearther_backend.apiResponse.exception.ErrorCode;
 import com.appsolve.wearther_backend.auth.jwt.JwtProvider;
 import com.appsolve.wearther_backend.Repository.MemberRepository;
+import com.appsolve.wearther_backend.closet.service.ClosetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,11 +25,10 @@ import java.util.stream.Collectors;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtProvider jwtProvider;
-    private final AuthenticationManager authenticationManager;
+    private final ClosetService closetService;
+    private final MemberTasteService memberTasteService;
     private final MemberTasteRepository memberTasteRepository;
     private final LocationService locationService;
-    private final RefreshTokenRepository refreshTokenRepository;
 
     public int getConstitutionByMemberId(Long memberId) {
         int number = memberRepository.findConstitutionByMemberId(memberId);
@@ -66,7 +66,6 @@ public class MemberService {
     }
 
 
-    //회원가입 필수 정보저장 메소드
     public Long registerMember(SignUpRequest request) {
         try {
             MemberEntity member = new MemberEntity();
@@ -81,6 +80,10 @@ public class MemberService {
             locationRequest.setMemberId(member.getMemberId());
             locationRequest.setLocationIndex(0);
             locationService.addLocation(locationRequest);
+
+            memberTasteService.createMemberTastes(member, request.getTasteIds());
+            closetService.createCloset(member,request.getClosetUpdateRequestDto());
+
             return member.getMemberId();
 
         } catch (DataIntegrityViolationException e) {

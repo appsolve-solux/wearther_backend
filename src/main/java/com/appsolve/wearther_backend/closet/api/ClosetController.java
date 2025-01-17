@@ -32,11 +32,6 @@ public class ClosetController {
         this.memberService = memberService;
     }
 
-    @PostMapping("createCloset")
-    public  ResponseEntity<?> createClosetByMember(@RequestHeader("Authorization") String token, @RequestBody ClosetUpdateRequestDto updateRequestDto) {
-        closetService.createCloset(updateRequestDto, token);
-        return ApiResponse.success(HttpStatus.CREATED,"옷장 만들었습니다.");
-    }
 
     // TODO : 사용자 로그인 여부 체크 로직 추가 필요
     // TODO : 테스트 위해 인증객체 대신 일단 아이디를 변수로 받아옴

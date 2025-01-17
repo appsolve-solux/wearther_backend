@@ -239,8 +239,7 @@ public class ClosetService {
                 .orElseThrow(() -> new RuntimeException("Other Wear not found"));
     }
 
-    public void createCloset(ClosetUpdateRequestDto updateRequestDto,String token) {
-        MemberEntity member = authService.getMemberEntityFromToken(token);
+    public void createCloset(MemberEntity member,ClosetUpdateRequestDto updateRequestDto) {
         Closet closet = Closet.createClosetByMember(member);
         Closet save = closetRepository.save(closet);
         member.setCloset(save);
