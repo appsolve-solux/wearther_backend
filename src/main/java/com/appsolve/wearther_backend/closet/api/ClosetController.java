@@ -1,11 +1,10 @@
 package com.appsolve.wearther_backend.closet.api;
 
 import com.appsolve.wearther_backend.Entity.MemberEntity;
-import com.appsolve.wearther_backend.Service.AuthService;
-import com.appsolve.wearther_backend.Service.TasteService;
 import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
 import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
+import com.appsolve.wearther_backend.auth.Service.AuthService;
 import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
 import com.appsolve.wearther_backend.closet.dto.ClosetUpdateRequestDto;
 import com.appsolve.wearther_backend.closet.dto.ShoppingListDto;
