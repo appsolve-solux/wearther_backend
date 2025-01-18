@@ -1,4 +1,4 @@
-package com.appsolve.wearther_backend.config.jwt;
+package com.appsolve.wearther_backend.auth.jwt;
 
 import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
 import com.appsolve.wearther_backend.apiResponse.exception.ErrorCode;
@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
@@ -15,7 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
@@ -62,22 +63,27 @@ public class JwtProvider {
     }
 
 
-    public void validateToken(final String token) {
+    public void checkRefreshToken(final String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
         } catch (SecurityException e) {
-            throw new CustomException(ErrorCode.INVALID_SIGNATURE);
-        } catch (MalformedJwtException e) {
+            log.warn("Invalid JWT signature: {}", e.getMessage()); // 서명 오류 로그
             throw new CustomException(ErrorCode.INVALID_TOKEN);
+        } catch (MalformedJwtException e) {
+            log.warn("Malformed JWT token: {}", e.getMessage()); // 형식 오류 로그
+            throw new CustomException(ErrorCode.JWT_MALFORMED);
         } catch (ExpiredJwtException e) {
+            log.warn("JWT token is expired: {}", e.getMessage()); // 만료 로그
             throw new CustomException(ErrorCode.TOKEN_EXPIRED);
         } catch (UnsupportedJwtException e) {
-            throw new CustomException(ErrorCode.UNSUPPORTED_TOKEN);
+            log.warn("Unsupported JWT token: {}", e.getMessage()); // 미지원 토큰 로그
+            throw new CustomException(ErrorCode.UNSUPPORTED_JWT);
         } catch (IllegalArgumentException e) {
-            throw new CustomException(ErrorCode.EMPTY_CLAIMS);
+            log.warn("JWT claims string is empty: {}", e.getMessage()); // 비어 있는 토큰 로그
+            throw new CustomException(ErrorCode.EMPTY_JWT);
         }
 
     }
@@ -105,16 +111,13 @@ public class JwtProvider {
     }
 
     public Claims getUserAllClaimFromToken(final String token) {
-        validateToken(token);
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims;
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims;
+
+
     }
-
-
-
-
 }

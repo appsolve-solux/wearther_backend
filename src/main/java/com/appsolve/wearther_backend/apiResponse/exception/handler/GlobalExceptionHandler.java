@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Slf4j
-@RestControllerAdvice(basePackages = {"com.appsolve.wearther_backend.Controller"})
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     // 존재하지 않는 요청

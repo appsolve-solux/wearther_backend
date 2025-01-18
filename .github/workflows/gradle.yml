@@ -13,59 +13,66 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # JDK 설정
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # Gradle wrapper에 실행 권한 부여
       - name: Give Gradle wrapper execute permissions
         run: chmod +x ./gradlew
 
-      # Gradle 최적화 및 캐싱
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 
 
-      # Gradle로 빌드 실행
       - name: Build with Gradle Wrapper
         run: ./gradlew build -x test
 
-      # application.properties 파일 동적으로 생성
       - name: Generate main application.properties
         run: |
           cd ./src/main
-          mkdir -p resources  # resources 폴더가 없으면 생성
+          mkdir -p resources 
           cd resources
           touch application.properties
-          echo "${{ secrets.APPLICATION_PROPERTIES }}" > application.properties
+          cat > application.properties <<EOL
+          spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}
+          spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          spring.datasource.password=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+          weather.service-key=${{ secrets.WEATHER_SERVICE_KEY }}
+          jwt.secret=${{ secrets.JWT_SECRET }}
+          jwt.expiration.access=2592000000
+          jwt.expiration.refresh=2592000000
+          EOL
         shell: bash
 
-      # test/application.properties 파일 동적으로 생성
       - name: Generate test application.properties
         run: |
           cd ./src/test
-          mkdir -p resources  # resources 폴더가 없으면 생성
+          mkdir -p resources  
           cd resources
           touch application.properties
-          echo "${{ secrets.TEST_APPLICATION_PROPERTIES }}" > application.properties
+          cat > application.properties <<EOL
+          spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}
+          spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          spring.datasource.password=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+          weather.service-key=${{ secrets.WEATHER_SERVICE_KEY }}
+          jwt.secret=${{ secrets.JWT_SECRET }}
+          jwt.expiration.access=2592000000
+          jwt.expiration.refresh=2592000000
+          EOL
         shell: bash
 
-      # Docker 로그인
       - name: Docker login
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      # Build and push Docker image
       - name: Build and push Docker image
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${{ github.sha }} -f ./Dockerfile .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${{ github.sha }}
 
-      # Deploy to EC2
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -112,6 +119,5 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # Generate and submit a dependency graph for Dependabot Alerts
       - name: Generate and submit dependency graph
-        uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582 

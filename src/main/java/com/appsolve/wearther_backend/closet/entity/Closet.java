@@ -11,7 +11,7 @@ import java.util.List;
 import static jakarta.persistence.FetchType.*;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder @Getter
 @Table(name="closet")
@@ -35,4 +35,11 @@ public class Closet {
     @Builder.Default
     @OneToMany(mappedBy = "closet", fetch = EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClosetOther> closetOthers = new ArrayList<>();
+
+    public static Closet createClosetByMember(MemberEntity member) {
+        Closet closet = Closet.builder().member(member).build();
+        member.setCloset(closet);
+        return closet;
+    }
+
 }

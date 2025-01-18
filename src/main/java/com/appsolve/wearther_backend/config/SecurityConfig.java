@@ -1,7 +1,10 @@
 package com.appsolve.wearther_backend.config;
 
-import com.appsolve.wearther_backend.config.jwt.JwtAuthorizationFilter;
-import com.appsolve.wearther_backend.config.jwt.JwtProvider;
+import com.appsolve.wearther_backend.apiResponse.exception.handler.CustomAccessDeniedHandler;
+import com.appsolve.wearther_backend.apiResponse.exception.handler.CustomAuthenticationEntryPointHandler;
+import com.appsolve.wearther_backend.apiResponse.exception.handler.JwtExceptionFilter;
+import com.appsolve.wearther_backend.auth.jwt.JwtAuthorizationFilter;
+import com.appsolve.wearther_backend.auth.jwt.JwtProvider;
 import com.appsolve.wearther_backend.Repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +32,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig{
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
+    private final CustomAuthenticationEntryPointHandler customAuthenticationEntryPointHandler;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -38,11 +46,11 @@ public class SecurityConfig{
         return authenticationConfiguration.getAuthenticationManager();
     }
     @Bean
-    public SecurityFilterChain SercurityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+    public SecurityFilterChain SecurityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("member/signUp", "member/login", "member/duplication-check").permitAll()
+                        .requestMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**","/error").permitAll()
+                        .requestMatchers("/member/signUp", "/auth/login", "/member/duplication-check", "/auth/refresh").permitAll()
                         .requestMatchers("/images/**", "/js/**", "/webjars/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -51,7 +59,13 @@ public class SecurityConfig{
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용 안 함
                 .httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
                 .formLogin(AbstractHttpConfigurer::disable) // 폼 기반 로그인 비활성
-                .addFilterAfter(new JwtAuthorizationFilter(memberRepository,jwtProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtExceptionFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthorizationFilter, JwtExceptionFilter.class)
+                .exceptionHandling(conf -> conf
+                .authenticationEntryPoint(customAuthenticationEntryPointHandler)
+                .accessDeniedHandler(customAccessDeniedHandler)
+        );
+
         return http.build();
     }
     @Bean
