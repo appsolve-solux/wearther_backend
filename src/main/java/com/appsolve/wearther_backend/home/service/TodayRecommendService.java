@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TodayRecommendService {
@@ -137,14 +138,31 @@ public class TodayRecommendService {
                 .map(weatherUpperWear -> weatherUpperWear.getUpperWear().getId())
                 .filter(uppers::contains)
                 .filter(tasteUpper::contains)
-                .toList();
+                .collect(Collectors.toList());
+
+        if (upperRecommend.isEmpty()) {
+            switch (weatherId.intValue()) {
+                case 1 -> upperRecommend.add(1L);
+                case 2, 3 -> upperRecommend.add(4L);
+                case 4, 5, 6, 7 -> upperRecommend.add(5L);
+                case 8, 9 -> upperRecommend.add(8L);
+            }
+        }
 
         // 하의 추천 리스트
         List<Long> lowerRecommend = weatherLowerWearRepository.findByWeatherId(weatherId).stream()
                 .map(weatherLowerWear -> weatherLowerWear.getLowerWear().getId())
                 .filter(lowers::contains)
                 .filter(tasteLower::contains)
-                .toList();
+                .collect(Collectors.toList());
+
+        if (lowerRecommend.isEmpty()) {
+            switch (weatherId.intValue()) {
+                case 1, 2 -> lowerRecommend.add(9L);
+                case 3, 4, 5, 6, 7 -> lowerRecommend.add(2L);
+                case 8, 9 -> lowerRecommend.add(10L);
+            }
+        }
 
         String rain = weatherResponseDto.getRain();
         String temperature = weatherResponseDto.getTemperature();
@@ -176,7 +194,7 @@ public class TodayRecommendService {
         List<Long> otherRecommend = weatherOtherWearRepository.findByWeatherId(weatherId).stream()
                 .map(weatherOtherWear -> weatherOtherWear.getOtherWear().getId())
                 .filter(others::contains)
-                .toList();
+                .collect(Collectors.toList());
 
         System.out.println("추천 리스트 - 상의: " + upperRecommend + " 하의: " + lowerRecommend + " 기타: " + otherRecommend);
         return new RecommendResponseDto(upperRecommend, lowerRecommend, otherRecommend);
