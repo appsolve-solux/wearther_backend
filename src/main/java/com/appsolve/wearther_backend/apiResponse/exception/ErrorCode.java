@@ -25,6 +25,10 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "USER4006", "중복된 이메일입니다"),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "USER4011", "로그인 정보가 잘못되었습니다."),
 
+    CLOTH_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "CLOTH40402", "의상 대분류 조회 중 오류가 발생했습니다. 다시 시도해주세요."),
+    CLOTH_NOT_FOUND(HttpStatus.NOT_FOUND, "CLOTH40403", "의상 조회 중 오류가 발생했습니다. 다시 시도해주세요."),
+    CLOSET_NOT_FOUND(HttpStatus.NOT_FOUND, "CLOTH40404", "옷장 조회 중 오류가 발생했습니다. 다시 시도해주세요."),
+    TASTE_NOT_FOUND(HttpStatus.NOT_FOUND, "CLOTH40405", "취향 조회 중 오류가 발생했습니다. 다시 시도해주세요."),
 
     DUPLICATE_LOCATION(HttpStatus.BAD_REQUEST, "LOCATION4001", "중복된 위치 정보입니다."),
     INDEX_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4003", "해당 사용자 정보에 존재하지 않는 인덱스입니다."),
