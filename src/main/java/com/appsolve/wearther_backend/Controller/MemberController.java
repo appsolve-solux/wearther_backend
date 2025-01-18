@@ -1,18 +1,42 @@
 package com.appsolve.wearther_backend.Controller;
 
+import com.appsolve.wearther_backend.Dto.SignUpRequest;
+import com.appsolve.wearther_backend.apiResponse.ApiResponse;
+import com.appsolve.wearther_backend.Dto.SignInRequest;
 
 import com.appsolve.wearther_backend.Service.MemberService;
-import com.appsolve.wearther_backend.apiResponse.ApiResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/member")
 public class MemberController {
-    @Autowired
-    private MemberService memberService;
+    private final MemberService memberService;
+
+
+    @PostMapping("/signUp")
+    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequest request) {
+        Long memberId = memberService.registerMember(request);
+        return ApiResponse.success(HttpStatus.
+                CREATED,Map.of("memberId", memberId));
+    }
+
+
+    @GetMapping("/duplication-check")
+    public  ResponseEntity<?> checkDuplication(@RequestParam String loginId) {
+        boolean isDuplicated = memberService.isLoginIdDuplicated(loginId);
+        return ApiResponse.success(HttpStatus.OK, Map.of("isDuplicated", isDuplicated));
+    }
 
     @GetMapping("/constitution/{memberId}")
     public ResponseEntity<ApiResponse<Integer>> getConstitution(@PathVariable Long memberId) {
