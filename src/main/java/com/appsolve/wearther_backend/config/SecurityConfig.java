@@ -3,8 +3,8 @@ package com.appsolve.wearther_backend.config;
 import com.appsolve.wearther_backend.apiResponse.exception.handler.CustomAccessDeniedHandler;
 import com.appsolve.wearther_backend.apiResponse.exception.handler.CustomAuthenticationEntryPointHandler;
 import com.appsolve.wearther_backend.apiResponse.exception.handler.JwtExceptionFilter;
-import com.appsolve.wearther_backend.config.jwt.JwtAuthorizationFilter;
-import com.appsolve.wearther_backend.config.jwt.JwtProvider;
+import com.appsolve.wearther_backend.auth.jwt.JwtAuthorizationFilter;
+import com.appsolve.wearther_backend.auth.jwt.JwtProvider;
 import com.appsolve.wearther_backend.Repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +19,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -51,7 +50,7 @@ public class SecurityConfig{
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**","/error").permitAll()
-                        .requestMatchers("member/signUp", "member/login", "member/duplication-check").permitAll()
+                        .requestMatchers("/member/signUp", "/auth/login", "/member/duplication-check", "/auth/refresh").permitAll()
                         .requestMatchers("/images/**", "/js/**", "/webjars/**").permitAll()
                         .anyRequest().authenticated()
                 )

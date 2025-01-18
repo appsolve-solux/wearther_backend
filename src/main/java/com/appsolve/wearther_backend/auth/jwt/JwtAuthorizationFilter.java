@@ -1,7 +1,7 @@
-package com.appsolve.wearther_backend.config.jwt;
+package com.appsolve.wearther_backend.auth.jwt;
 
 import com.appsolve.wearther_backend.Entity.MemberEntity;
-import com.appsolve.wearther_backend.config.auth.PrincipalDetails;
+import com.appsolve.wearther_backend.auth.PrincipalDetails;
 import com.appsolve.wearther_backend.Repository.MemberRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

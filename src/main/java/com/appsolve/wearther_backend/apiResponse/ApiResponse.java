@@ -6,8 +6,6 @@ import jakarta.annotation.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Map;
-
 public record ApiResponse<T> (
                              HttpStatus httpStatus,
                              boolean success,
@@ -19,10 +17,10 @@ public record ApiResponse<T> (
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
     }
 
-    public static <T> ResponseEntity<ApiResponse<T>> loginSuccess(HttpStatus httpStatus,  @Nullable final T result, String token){
+    public static <T> ResponseEntity<ApiResponse<T>> loginSuccess(HttpStatus httpStatus,  @Nullable final T result, String accessToken){
         ApiResponse<T> response = (ApiResponse<T>) new ApiResponse<>(httpStatus, true, result , null);
         return ResponseEntity.ok()
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", "Bearer " + accessToken)
                 .body(response);
     }
 

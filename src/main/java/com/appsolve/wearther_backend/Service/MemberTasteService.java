@@ -4,6 +4,7 @@ import com.appsolve.wearther_backend.Entity.MemberEntity;
 import com.appsolve.wearther_backend.Entity.MemberTaste;
 import com.appsolve.wearther_backend.Repository.MemberRepository;
 import com.appsolve.wearther_backend.Repository.MemberTasteRepository;
+import com.appsolve.wearther_backend.auth.Service.AuthService;
 import com.appsolve.wearther_backend.init_data.entity.Taste;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;

@@ -21,8 +21,8 @@ public enum ErrorCode {
     /*에러 추가 가능*/
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4001", "존재하지 않는 사용자 ID입니다."),
     USER_NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "USER4002", "사용자 인증이 필요합니다."),
-    NOT_FOUND_AUTHORIZATION(HttpStatus.UNAUTHORIZED, "USER4003","Authorization 오류가 있습니다."),
-    DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST,"USER4006" ,"중복된 이메일입니다" ),
+    NOT_FOUND_AUTHORIZATION(HttpStatus.UNAUTHORIZED, "USER4003", "Authorization 오류가 있습니다."),
+    DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "USER4006", "중복된 이메일입니다"),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "USER4011", "로그인 정보가 잘못되었습니다."),
 
 
@@ -34,7 +34,10 @@ public enum ErrorCode {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "JWT4001", "유효하지 않은 JWT 토큰입니다."),
     INVALID_SIGNATURE(HttpStatus.UNAUTHORIZED, "JWT4002", "JWT 서명이 유효하지 않습니다."),
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "JWT4003", "JWT 토큰이 만료되었습니다."),
-    MISSING_TOKEN(HttpStatus.UNAUTHORIZED, "JWT4000", "JWT 토큰이 요청에 포함되어 있지 않습니다.");
+    MISSING_TOKEN(HttpStatus.UNAUTHORIZED, "JWT4000", "JWT 토큰이 요청에 포함되어 있지 않습니다."),
+    JWT_MALFORMED(HttpStatus.UNAUTHORIZED, "JWT4002", "JWT 토큰의 형식이 잘못되었습니다."), // 형식 오류
+    UNSUPPORTED_JWT(HttpStatus.UNAUTHORIZED, "JWT4004", "지원하지 않는 JWT 토큰입니다."),
+    EMPTY_JWT(HttpStatus.UNAUTHORIZED, "JWT4005", "JWT 클레임이 비어 있습니다."); // 비어 있는 토큰
 
 
     private final HttpStatus httpStatus;

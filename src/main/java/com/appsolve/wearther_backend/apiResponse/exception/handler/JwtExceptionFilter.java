@@ -34,7 +34,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             handleException(response, ErrorCode.INVALID_TOKEN, "유효하지 않은 JWT 토큰입니다.");
         } catch (Exception e) {
             log.error("[JwtExceptionFilter] :: 기타 예외 발생. {}", e.getMessage());
-            handleException(response, ErrorCode._INTERNAL_SERVER_ERROR, "서버 에러, 관리자에게 문의 바랍니다.");
+            throw e;
         }
     }
 
