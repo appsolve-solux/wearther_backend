@@ -30,32 +30,11 @@ jobs:
 
       - name: Generate main application.properties
         run: |
-          echo "Changing directory to ./src/main"
-          
           cd ./src/main
-
-          echo "Creating resources directory if it does not exist"
-          mkdir -p resources
-
-          echo "Changing directory to resources"
+          mkdir -p resources 
           cd resources
-
-          echo "Creating application.properties file"
           touch application.properties
-
-          echo "Writing values to application.properties"
-          cat > application.properties <<EOL
-          spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}
-          spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}
-          spring.datasource.password=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-          weather.service-key=${{ secrets.WEATHER_SERVICE_KEY }}
-          jwt.secret=${{ secrets.JWT_SECRET }}
-          jwt.expiration.access=2592000000
-          jwt.expiration.refresh=2592000000
-          EOL
-
-          echo "Verifying the contents of application.properties"
-          cat application.properties
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > application.properties
 
         shell: bash
 
@@ -65,15 +44,7 @@ jobs:
           mkdir -p resources  
           cd resources
           touch application.properties
-          cat > application.properties <<EOL
-          spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}
-          spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}
-          spring.datasource.password=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-          weather.service-key=${{ secrets.WEATHER_SERVICE_KEY }}
-          jwt.secret=${{ secrets.JWT_SECRET }}
-          jwt.expiration.access=2592000000
-          jwt.expiration.refresh=2592000000
-          EOL
+          echo "${{ secrets.TEST_APPLICATION_PROPERTIES }}" > application.properties
         shell: bash
 
       - name: Docker login
