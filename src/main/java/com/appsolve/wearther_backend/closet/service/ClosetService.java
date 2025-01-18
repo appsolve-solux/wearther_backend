@@ -2,6 +2,7 @@ package com.appsolve.wearther_backend.closet.service;
 
 import com.appsolve.wearther_backend.Entity.MemberEntity;
 import com.appsolve.wearther_backend.Repository.MemberRepository;
+import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.auth.Service.AuthService;
 import com.appsolve.wearther_backend.Service.TasteService;
 import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
@@ -42,14 +43,12 @@ public class ClosetService {
     private final OtherWearRepository otherWearRepository;
     private final ClosetRepository closetRepository;
     private final TasteService tasteService;
-    private final AuthService authService;
-    private final MemberService memberService;
 
     public ClosetService(AuthService authService,
-                         ClosetUpperRepository closetUpperRepository, MemberRepository memberRepository, ClosetLowerRepository closetLowerRepository,
+                         ClosetUpperRepository closetUpperRepository, ClosetLowerRepository closetLowerRepository,
                          ClosetOtherRepository closetOtherRepository, ClosetRepository closetRepository,
                          UpperWearRepository upperWearRepository, LowerWearRepository lowerWearRepository,
-                         OtherWearRepository otherWearRepository, TasteService tasteService, MemberService memberService) {
+                         OtherWearRepository otherWearRepository, TasteService tasteService) {
         this.closetUpperRepository = closetUpperRepository;
         this.closetLowerRepository = closetLowerRepository;
         this.closetOtherRepository = closetOtherRepository;
@@ -58,8 +57,7 @@ public class ClosetService {
         this.otherWearRepository = otherWearRepository;
         this.closetRepository = closetRepository;
         this.tasteService = tasteService;
-        this.authService = authService;
-        this.memberService = memberService;
+
     }
 
     public ClosetResponseDto makeUserOwnClothesList(Long memberId) {

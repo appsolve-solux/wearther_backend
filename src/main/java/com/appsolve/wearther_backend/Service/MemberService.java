@@ -87,7 +87,8 @@ public class MemberService {
             return member.getMemberId();
 
         } catch (DataIntegrityViolationException e) {
-            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
+            throw new CustomException(ErrorCode.GENERAL_DATABASE_ERROR);
+
         }
     }
 
