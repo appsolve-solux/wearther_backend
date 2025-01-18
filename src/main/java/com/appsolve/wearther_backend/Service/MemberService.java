@@ -4,12 +4,12 @@ import com.appsolve.wearther_backend.Dto.LocationPostRequestDto;
 import com.appsolve.wearther_backend.Dto.SignInRequest;
 import com.appsolve.wearther_backend.Dto.SignUpRequest;
 import com.appsolve.wearther_backend.Entity.MemberEntity;
+import com.appsolve.wearther_backend.Repository.MemberRepository;
 import com.appsolve.wearther_backend.Repository.MemberTasteRepository;
 import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
 import com.appsolve.wearther_backend.apiResponse.exception.ErrorCode;
 import com.appsolve.wearther_backend.config.auth.PrincipalDetails;
 import com.appsolve.wearther_backend.config.jwt.JwtProvider;
-import com.appsolve.wearther_backend.Repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -89,6 +89,7 @@ public class MemberService {
             return member.getMemberId();
 
         } catch (DataIntegrityViolationException e) {
+            System.out.println("에러 : " + e.getMessage());
             throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
         }
     }
@@ -99,7 +100,7 @@ public class MemberService {
 
     public Map<String,?> signInMember(SignInRequest request) {
         try {
-            UsernamePasswordAuthenticationToken authenticationToken =
+             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(request.getLoginId(), request.getUserPw());
             System.out.println(request.getLoginId());
 
@@ -112,6 +113,7 @@ public class MemberService {
             authResponseMap.put("accessToken",accessToken);
             authResponseMap.put("memberId", memberId);
             return  authResponseMap;
+
         } catch (BadCredentialsException e) {
             throw new CustomException(ErrorCode.LOGIN_FAILED);
         }
