@@ -8,7 +8,6 @@ import com.appsolve.wearther_backend.auth.Service.AuthService;
 import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
 import com.appsolve.wearther_backend.closet.dto.ClosetUpdateRequestDto;
 import com.appsolve.wearther_backend.closet.dto.ShoppingListDto;
-
 import com.appsolve.wearther_backend.closet.service.ClosetService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -39,9 +38,9 @@ public class ClosetController {
     }
 
     @PostMapping("/createCloset")
-    public  ResponseEntity<?> createClosetByMember(@RequestHeader("Authorization") String token, @RequestBody ClosetUpdateRequestDto updateRequestDto) {
+    public ResponseEntity<?> createClosetByMember(@RequestHeader("Authorization") String token, @RequestBody ClosetUpdateRequestDto updateRequestDto) {
         closetService.createCloset(updateRequestDto, token);
-        return ApiResponse.success(HttpStatus.CREATED,"옷장 만들었습니다.");
+        return ApiResponse.success(HttpStatus.CREATED, "옷장 만들었습니다.");
     }
 
     @GetMapping("/clothes")
@@ -100,8 +99,7 @@ public class ClosetController {
         if (tasteIds.isEmpty()) {
             ShoppingListDto shoppingListDto = closetService.makeShoppingDtoifUserNoTaste(memberId);
             shoppingListDtos.add(shoppingListDto);
-        }
-        else {
+        } else {
             try {
                 for (Long tasteId : tasteIds) {
                     ShoppingListDto shoppingListDto = closetService.makeShoppingDto(memberId, tasteId);
@@ -118,9 +116,13 @@ public class ClosetController {
         return ApiResponse.success(HttpStatus.OK, shoppingListDtos);
     }
 
-    @PatchMapping("/update/{memberId}")
-    public ResponseEntity<?> updateUserCloset(@PathVariable("memberId") Long memberId,
+    @PatchMapping("/update")
+    public ResponseEntity<?> updateUserCloset(@RequestHeader("Authorization") String token,
                                               @RequestBody ClosetUpdateRequestDto updateRequestDto) {
+
+        MemberEntity member = authService.getMemberEntityFromToken(token);
+        Long memberId = member.getMemberId();
+
         // 사용자가 보유한 옷을 업데이트
         closetService.updateUserCloset(memberId, updateRequestDto.getUppers(), updateRequestDto.getLowers(), updateRequestDto.getOthers());
         return ApiResponse.success(HttpStatus.OK, updateRequestDto);
