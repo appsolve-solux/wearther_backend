@@ -2,6 +2,7 @@ package com.appsolve.wearther_backend.closet.service;
 
 import com.appsolve.wearther_backend.Entity.MemberEntity;
 import com.appsolve.wearther_backend.Repository.MemberRepository;
+import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.auth.Service.AuthService;
 import com.appsolve.wearther_backend.Service.TasteService;
 import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
