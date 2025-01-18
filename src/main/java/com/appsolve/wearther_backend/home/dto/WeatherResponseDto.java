@@ -14,4 +14,5 @@ public class WeatherResponseDto {
     private String humidity;
     private List<String> hourlyTemp;
     private List<String> hourlySky;
+    private String rain;
 }
