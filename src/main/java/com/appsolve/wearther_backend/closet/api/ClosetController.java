@@ -1,11 +1,9 @@
 package com.appsolve.wearther_backend.closet.api;
 
-import com.appsolve.wearther_backend.Entity.MemberEntity;
-import com.appsolve.wearther_backend.Service.AuthService;
-import com.appsolve.wearther_backend.Service.TasteService;
 import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
 import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
+import com.appsolve.wearther_backend.auth.Service.AuthService;
 import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
 import com.appsolve.wearther_backend.closet.dto.ClosetUpdateRequestDto;
 import com.appsolve.wearther_backend.closet.dto.ShoppingListDto;
@@ -40,17 +38,16 @@ public class ClosetController {
     }
 
     @GetMapping("/clothes")
-    public ResponseEntity<?> getMemberCloset(@RequestHeader("Authorization") String token) {
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
+    public ResponseEntity<?> getMemberCloset() {
+        Long memberId = authService.extractMemberIdFromContext();
+
         ClosetResponseDto closetResponseDto = closetService.getOwnedClothes(memberId);
         return ApiResponse.success(HttpStatus.OK, closetResponseDto);
     }
 
     @GetMapping("/recommend")
-    public ResponseEntity<?> getRecommendedCloset(@RequestHeader("Authorization") String token) {
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
+    public ResponseEntity<?> getRecommendedCloset() {
+        Long memberId = authService.extractMemberIdFromContext();
         ClosetResponseDto recommendedCloset = getRecommendedClosetData(memberId);
         return ApiResponse.success(HttpStatus.OK, recommendedCloset);
     }
@@ -85,9 +82,8 @@ public class ClosetController {
     }
 
     @GetMapping("/shopping")
-    public ResponseEntity<?> getShoppingList(@RequestHeader("Authorization") String token) {
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
+    public ResponseEntity<?> getShoppingList() {
+        Long memberId = authService.extractMemberIdFromContext();
         List<Long> tasteIds = memberService.getMemberTastes(memberId);
 
         List<ShoppingListDto> shoppingListDtos = new ArrayList<>();
@@ -114,11 +110,10 @@ public class ClosetController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<?> updateUserCloset(@RequestHeader("Authorization") String token,
+    public ResponseEntity<?> updateUserCloset(
                                               @RequestBody ClosetUpdateRequestDto updateRequestDto) {
 
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
+        Long memberId = authService.extractMemberIdFromContext();
 
         // 사용자가 보유한 옷을 업데이트
         closetService.updateUserCloset(memberId, updateRequestDto.getUppers(), updateRequestDto.getLowers(), updateRequestDto.getOthers());

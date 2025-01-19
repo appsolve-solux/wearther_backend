@@ -26,9 +26,8 @@ public class ProfileEditController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<ApiResponse<ProfileEditResponseDto>> getProfile(@RequestHeader("Authorization") String token){
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
+    public ResponseEntity<ApiResponse<ProfileEditResponseDto>> getProfile(){
+        Long memberId = authService.extractMemberIdFromContext();
 
         ProfileEditResponseDto dto = profileEditService.getProfileByMemberId(memberId);
         return ApiResponse.success(HttpStatus.OK, dto);

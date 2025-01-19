@@ -12,13 +12,12 @@ import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
 import com.appsolve.wearther_backend.apiResponse.exception.ErrorCode;
 import com.appsolve.wearther_backend.auth.PrincipalDetails;
 import com.appsolve.wearther_backend.auth.jwt.JwtProvider;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +32,13 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public MemberEntity getMemberEntityFromToken(String token) {
-        token = token.replace("Bearer ", "");
-        Long memberId = jwtProvider.getUserIdFromToken(token);
-        return memberRepository.findByMemberId(memberId);
+    public Long extractMemberIdFromContext() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return principal.getMember().getMemberId();
     }
 
     @Transactional
@@ -84,8 +86,9 @@ public class AuthService {
     }
 
     @Transactional
-    public void logout(String accessToken, LogoutRequest logoutRequest) {
-        MemberEntity member = getMemberEntityFromToken(accessToken);
+    public void logout( LogoutRequest logoutRequest) {
+        Long memberId = extractMemberIdFromContext();
+        MemberEntity member = memberRepository.findByMemberId(memberId);
         RefreshToken existingToken = (RefreshToken) refreshTokenRepository.findByMember_MemberIdAndRefreshTokenAndDeviceId(member.getMemberId(), logoutRequest.getRefreshToken(), logoutRequest.getDeviceId())
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_TOKEN));
         refreshTokenRepository.delete(existingToken);

@@ -27,9 +27,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String accessToken,
-                                    @RequestBody LogoutRequest logoutRequest) {
-        authService.logout(accessToken, logoutRequest);
+    public ResponseEntity<?> logout( @RequestBody LogoutRequest logoutRequest) {
+        authService.logout(logoutRequest);
         return ApiResponse.success(HttpStatus.OK, "로그아웃 완료");
     }
 

@@ -30,37 +30,33 @@ public class LocationController {
 
 
     @PostMapping("/post")
-    public ResponseEntity<ApiResponse<LocationPostRequestDto>> addLocation(@RequestHeader("Authorization") String token, @RequestBody LocationPostRequestDto locationRequest) {
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
+    public ResponseEntity<ApiResponse<LocationPostRequestDto>> addLocation( @RequestBody LocationPostRequestDto locationRequest) {
+        Long memberId = authService.extractMemberIdFromContext();
 
         Location location = locationService.addLocation(memberId, locationRequest);
         return ApiResponse.success(HttpStatus.CREATED, locationRequest);
     }
 
     @DeleteMapping("/delete/{locationIndex}")
-    public ResponseEntity<ApiResponse<Integer>> deleteLocation(@RequestHeader("Authorization") String token, @PathVariable Integer locationIndex) {
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
+    public ResponseEntity<ApiResponse<Integer>> deleteLocation( @PathVariable Integer locationIndex) {
+        Long memberId = authService.extractMemberIdFromContext();
 
         locationService.deleteLocationByMemberIdAndLocationIndex(memberId, locationIndex);
         return ApiResponse.success(HttpStatus.OK, locationIndex);
     }
 
     @PatchMapping("/update-index")
-    public ResponseEntity<ApiResponse<LocationIndexUpdateRequestDto>> updateLocationIndex(@RequestHeader("Authorizatoin") String token, @RequestBody LocationIndexUpdateRequestDto updateRequest) {
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
+    public ResponseEntity<ApiResponse<LocationIndexUpdateRequestDto>> updateLocationIndex( @RequestBody LocationIndexUpdateRequestDto updateRequest) {
+        Long memberId = authService.extractMemberIdFromContext();
+
 
         locationService.updateLocationIndex(memberId, updateRequest.getBeforeLocationIndex(), updateRequest.getAfterLocationIndex());
         return ApiResponse.success(HttpStatus.OK, updateRequest);
     }
 
     @GetMapping("/get")
-    public ResponseEntity<ApiResponse<LocationWeatherResponseDto>> getLocationList(@RequestHeader("Authorization") String token) {
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
-
+    public ResponseEntity<ApiResponse<LocationWeatherResponseDto>> getLocationList() {
+        Long memberId = authService.extractMemberIdFromContext();
         LocationWeatherResponseDto dto = locationWeatherService.getLocationsWeather(memberId);
         return ApiResponse.success(HttpStatus.OK, dto);
     }

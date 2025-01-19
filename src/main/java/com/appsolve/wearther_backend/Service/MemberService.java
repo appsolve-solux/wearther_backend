@@ -25,11 +25,10 @@ import java.util.stream.Collectors;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtProvider jwtProvider;
-    private final AuthenticationManager authenticationManager;
+    private final MemberTasteService memberTasteService;
+    private  final ClosetService closetService;
     private final MemberTasteRepository memberTasteRepository;
     private final LocationService locationService;
-    private final RefreshTokenRepository refreshTokenRepository;
 
     public int getConstitutionByMemberId(Long memberId) {
         int number = memberRepository.findConstitutionByMemberId(memberId);
@@ -79,9 +78,8 @@ public class MemberService {
 
             LocationPostRequestDto locationRequest = request.getLocationPostRequestDto();
             System.out.println("LocationInfo" + locationRequest.getLocationInfo());
-            locationRequest.setMemberId(member.getMemberId());
             locationRequest.setLocationIndex(0);
-            locationService.addLocation(locationRequest);
+            locationService.addLocation(member.getMemberId(),locationRequest);
 
             memberTasteService.createMemberTastes(member, request.getTasteIds());
             closetService.createCloset(member,request.getClosetUpdateRequestDto());
