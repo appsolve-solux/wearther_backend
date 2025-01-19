@@ -26,8 +26,12 @@ public class InitService {
     @Autowired private TasteOtherWearRepository tasteOtherWearRepository;
     @Autowired private WeatherOtherWearRepository weatherOtherWearRepository;
 
-    @Transactional
     @PostConstruct
+    public void start() {
+        init();
+    }
+
+    @Transactional
     public void init() {
         log.info("Initializing weather data...");
 
@@ -35,6 +39,7 @@ public class InitService {
             if (weatherRepository.count() == 0) {
                 log.info("Weather data is empty. Initializing...");
                 setWeather();
+                log.info("Weather data initialization completed.");
             } else {
                 log.info("Weather data already exists.");
             }
