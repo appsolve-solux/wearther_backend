@@ -20,16 +20,16 @@ public class LocationService {
     private final LocationRepository locationRepository;
     private final MemberRepository memberRepository;  // MemberEntity를 조회하기 위해 필요
 
-    public Location addLocation(LocationPostRequestDto locationRequest) {
+    public Location addLocation(Long memberId, LocationPostRequestDto locationRequest) {
         Optional<Location> existingLocation = locationRepository.findByMember_MemberIdAndLocationIndex(
-                locationRequest.getMemberId(), locationRequest.getLocationIndex()
+                memberId, locationRequest.getLocationIndex()
         );
 
         if (existingLocation.isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATE_LOCATION);
         }
 
-        MemberEntity member = memberRepository.findById(locationRequest.getMemberId())
+        MemberEntity member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode._BAD_REQUEST));
 
         Location location = Location.builder()

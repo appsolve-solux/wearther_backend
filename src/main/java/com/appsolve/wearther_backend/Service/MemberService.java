@@ -3,12 +3,12 @@ package com.appsolve.wearther_backend.Service;
 import com.appsolve.wearther_backend.Dto.LocationPostRequestDto;
 import com.appsolve.wearther_backend.Dto.SignUpRequest;
 import com.appsolve.wearther_backend.Entity.MemberEntity;
+import com.appsolve.wearther_backend.Repository.MemberRepository;
 import com.appsolve.wearther_backend.Repository.MemberTasteRepository;
-import com.appsolve.wearther_backend.auth.Repository.RefreshTokenRepository;
 import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
 import com.appsolve.wearther_backend.apiResponse.exception.ErrorCode;
+import com.appsolve.wearther_backend.auth.Repository.RefreshTokenRepository;
 import com.appsolve.wearther_backend.auth.jwt.JwtProvider;
-import com.appsolve.wearther_backend.Repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -78,9 +78,8 @@ public class MemberService {
 
             LocationPostRequestDto locationRequest = request.getLocationPostRequestDto();
             System.out.println("LocationInfo" + locationRequest.getLocationInfo());
-            locationRequest.setMemberId(member.getMemberId());
             locationRequest.setLocationIndex(0);
-            locationService.addLocation(locationRequest);
+            locationService.addLocation(member.getMemberId(), locationRequest);
             return member.getMemberId();
 
         } catch (DataIntegrityViolationException e) {
@@ -93,6 +92,6 @@ public class MemberService {
     }
 
 
-    }
+}
 
 
