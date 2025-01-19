@@ -1,10 +1,11 @@
 package com.appsolve.wearther_backend.closet.api;
 
 import com.appsolve.wearther_backend.Entity.MemberEntity;
+import com.appsolve.wearther_backend.Service.AuthService;
+import com.appsolve.wearther_backend.Service.TasteService;
 import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
 import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
-import com.appsolve.wearther_backend.auth.Service.AuthService;
 import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
 import com.appsolve.wearther_backend.closet.dto.ClosetUpdateRequestDto;
 import com.appsolve.wearther_backend.closet.dto.ShoppingListDto;
@@ -80,7 +81,6 @@ public class ClosetController {
                 others.addAll(recommendedClothes.getOthers());
             }
         }
-
         return new ClosetResponseDto(new ArrayList<>(uppers), new ArrayList<>(lowers), new ArrayList<>(others));
     }
 
@@ -113,13 +113,15 @@ public class ClosetController {
         return ApiResponse.success(HttpStatus.OK, shoppingListDtos);
     }
 
-    @PatchMapping("/update/{memberId}")
-    public ResponseEntity<?> updateUserCloset(@PathVariable("memberId") Long memberId,
+    @PatchMapping("/update")
+    public ResponseEntity<?> updateUserCloset(@RequestHeader("Authorization") String token,
                                               @RequestBody ClosetUpdateRequestDto updateRequestDto) {
+
+        MemberEntity member = authService.getMemberEntityFromToken(token);
+        Long memberId = member.getMemberId();
+
         // 사용자가 보유한 옷을 업데이트
         closetService.updateUserCloset(memberId, updateRequestDto.getUppers(), updateRequestDto.getLowers(), updateRequestDto.getOthers());
         return ApiResponse.success(HttpStatus.OK, updateRequestDto);
     }
-
-
 }

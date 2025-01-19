@@ -25,10 +25,11 @@ import java.util.stream.Collectors;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ClosetService closetService;
-    private final MemberTasteService memberTasteService;
+    private final JwtProvider jwtProvider;
+    private final AuthenticationManager authenticationManager;
     private final MemberTasteRepository memberTasteRepository;
     private final LocationService locationService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public int getConstitutionByMemberId(Long memberId) {
         int number = memberRepository.findConstitutionByMemberId(memberId);
@@ -66,6 +67,7 @@ public class MemberService {
     }
 
 
+    //회원가입 필수 정보저장 메소드
     public Long registerMember(SignUpRequest request) {
         try {
             MemberEntity member = new MemberEntity();
@@ -87,8 +89,7 @@ public class MemberService {
             return member.getMemberId();
 
         } catch (DataIntegrityViolationException e) {
-            throw new CustomException(ErrorCode.GENERAL_DATABASE_ERROR);
-
+            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
         }
     }
 

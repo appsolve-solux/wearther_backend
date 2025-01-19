@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class LocationIndexUpdateRequestDto {
-    private Long memberId;
     private int beforeLocationIndex;
     private int afterLocationIndex;
 }

@@ -14,19 +14,28 @@ import java.util.List;
 public class MemberTasteController {
 
     private final MemberTasteService memberTasteService;
+    private final AuthService authService;
 
-    public MemberTasteController(MemberTasteService memberTasteService) {
+    public MemberTasteController(MemberTasteService memberTasteService, AuthService authService) {
         this.memberTasteService = memberTasteService;
+        this.authService = authService;
     }
 
-    @PatchMapping("/update/{memberId}")
-    public ResponseEntity<ApiResponse<List<Long>>> updateTastes(@PathVariable Long memberId, @RequestBody List<Long> tasteIds) {
+
+    @PatchMapping("/update")
+    public ResponseEntity<ApiResponse<List<Long>>> updateTastes(@RequestHeader("Authorization") String token, @RequestBody List<Long> tasteIds) {
+        MemberEntity member = authService.getMemberEntityFromToken(token);
+        Long memberId = member.getMemberId();
+
         memberTasteService.updateMemberTastes(memberId, tasteIds);
         return ApiResponse.success(HttpStatus.OK, tasteIds);
     }
 
-    @GetMapping("/get/{memberId}")
-    public ResponseEntity<ApiResponse<List<Long>>> getTastes(@PathVariable Long memberId) {
+    @GetMapping("/get")
+    public ResponseEntity<ApiResponse<List<Long>>> getTastes(@RequestHeader("Authorization") String token) {
+        MemberEntity member = authService.getMemberEntityFromToken(token);
+        Long memberId = member.getMemberId();
+
         List<Long> tastes = memberTasteService.getMemberTasteIds(memberId);
         return ApiResponse.success(HttpStatus.OK, tastes);
     }

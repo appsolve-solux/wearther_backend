@@ -35,6 +35,7 @@ public enum ErrorCode {
     Weather_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4004", "날씨 정보를 가져올 수 없습니다"),
     GENERAL_DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "DB5000", "데이터베이스 처리 중 오류가 발생했습니다."),
 
+    TEMP_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4005", "체감온도를 구할 수 없습니다"),
 
     /* JWT 관련 에러 */
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "JWT4001", "유효하지 않은 JWT 토큰입니다."),
