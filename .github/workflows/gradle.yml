@@ -67,9 +67,11 @@ jobs:
           script: |
             echo "Starting deployment..."
             cd ~/wearther_backend
+
             echo "Pulling latest changes from main branch..."
             git fetch --all
             git reset --hard origin/main
+
             echo "Pulling latest Docker image..."
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${{ github.sha }}
 
@@ -89,13 +91,13 @@ jobs:
             EOL
 
             echo "Stopping spring-boot-app container..."
-            docker-compose --env-file .env stop spring-boot-app
+            docker-compose --env-file .env stop app
 
             echo "Removing spring-boot-app container..."
-            docker-compose --env-file .env rm -f spring-boot-app
+            docker-compose --env-file .env rm -f app
 
             echo "Recreating spring-boot-app service with docker-compose..."
-            docker-compose --env-file .env up -d --build spring-boot-app
+            docker-compose --env-file .env up -d --no-deps --build app
 
             echo "Checking Docker containers..."
             docker-compose ps
