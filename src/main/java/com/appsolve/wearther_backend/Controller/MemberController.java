@@ -36,36 +36,32 @@ public class MemberController {
     }
 
     @GetMapping("/constitution")
-    public ResponseEntity<ApiResponse<Integer>> getConstitution(@RequestHeader("Authorization") String token) {
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
+    public ResponseEntity<ApiResponse<Integer>> getConstitution() {        Long memberId = authService.extractMemberIdFromContext();
+
 
         int constitution = memberService.getConstitutionByMemberId(memberId);
         return ApiResponse.success(HttpStatus.OK, constitution);
     }
 
     @PatchMapping("/constitution/update/{constitution}")
-    public ResponseEntity<ApiResponse<Integer>> updateMemberConstitution(@RequestHeader("Authorization") String token, @PathVariable Integer constitution) {
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
+    public ResponseEntity<ApiResponse<Integer>> updateMemberConstitution( @PathVariable Integer constitution) {        Long memberId = authService.extractMemberIdFromContext();
+
 
         memberService.updateConstitutionByMemberId(memberId, constitution);
         return ApiResponse.success(HttpStatus.OK, constitution);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ApiResponse<Long>> deleteMember(@RequestHeader("Authorization") String token) {
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
+    public ResponseEntity<ApiResponse<Long>> deleteMember() {        Long memberId = authService.extractMemberIdFromContext();
+
 
         memberService.deleteMember(memberId);
         return ApiResponse.success(HttpStatus.OK, memberId);
     }
 
     @PatchMapping("/password/update/{newPassword}")
-    public ResponseEntity<ApiResponse<String>> updateMemberPassword(@RequestHeader("Authorization") String token, @PathVariable String newPassword) {
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
+    public ResponseEntity<ApiResponse<String>> updateMemberPassword( @PathVariable String newPassword) {        Long memberId = authService.extractMemberIdFromContext();
+
 
         memberService.updatePasswordById(memberId, newPassword);
         return ApiResponse.success(HttpStatus.OK, newPassword);

@@ -1,6 +1,6 @@
 package com.appsolve.wearther_backend.Controller;
 
-import com.appsolve.wearther_backend.Entity.MemberEntity;
+
 import com.appsolve.wearther_backend.Service.MemberTasteService;
 import com.appsolve.wearther_backend.apiResponse.ApiResponse;
 import com.appsolve.wearther_backend.auth.Service.AuthService;
@@ -22,26 +22,17 @@ public class MemberTasteController {
         this.authService = authService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<ApiResponse<List<Long>>> createTastes(@RequestHeader("Authorization") String token, @RequestBody List<Long> tasteIds) {
-        memberTasteService.createMemberTastes(token, tasteIds);
-        return ApiResponse.success(HttpStatus.OK, tasteIds);
-    }
 
     @PatchMapping("/update")
-    public ResponseEntity<ApiResponse<List<Long>>> updateTastes(@RequestHeader("Authorization") String token, @RequestBody List<Long> tasteIds) {
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
-
+    public ResponseEntity<ApiResponse<List<Long>>> updateTastes( @RequestBody List<Long> tasteIds) {
+        Long memberId = authService.extractMemberIdFromContext();
         memberTasteService.updateMemberTastes(memberId, tasteIds);
         return ApiResponse.success(HttpStatus.OK, tasteIds);
     }
 
     @GetMapping("/get")
-    public ResponseEntity<ApiResponse<List<Long>>> getTastes(@RequestHeader("Authorization") String token) {
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
-
+    public ResponseEntity<ApiResponse<List<Long>>> getTastes() {
+        Long memberId = authService.extractMemberIdFromContext();
         List<Long> tastes = memberTasteService.getMemberTasteIds(memberId);
         return ApiResponse.success(HttpStatus.OK, tastes);
     }

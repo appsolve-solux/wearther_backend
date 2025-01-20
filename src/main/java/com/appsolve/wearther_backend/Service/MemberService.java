@@ -3,12 +3,13 @@ package com.appsolve.wearther_backend.Service;
 import com.appsolve.wearther_backend.Dto.LocationPostRequestDto;
 import com.appsolve.wearther_backend.Dto.SignUpRequest;
 import com.appsolve.wearther_backend.Entity.MemberEntity;
-import com.appsolve.wearther_backend.Repository.MemberRepository;
 import com.appsolve.wearther_backend.Repository.MemberTasteRepository;
+import com.appsolve.wearther_backend.auth.Repository.RefreshTokenRepository;
 import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
 import com.appsolve.wearther_backend.apiResponse.exception.ErrorCode;
-import com.appsolve.wearther_backend.auth.Repository.RefreshTokenRepository;
 import com.appsolve.wearther_backend.auth.jwt.JwtProvider;
+import com.appsolve.wearther_backend.Repository.MemberRepository;
+import com.appsolve.wearther_backend.closet.service.ClosetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,11 +25,10 @@ import java.util.stream.Collectors;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtProvider jwtProvider;
-    private final AuthenticationManager authenticationManager;
+    private final MemberTasteService memberTasteService;
+    private  final ClosetService closetService;
     private final MemberTasteRepository memberTasteRepository;
     private final LocationService locationService;
-    private final RefreshTokenRepository refreshTokenRepository;
 
     public int getConstitutionByMemberId(Long memberId) {
         int number = memberRepository.findConstitutionByMemberId(memberId);
@@ -79,7 +79,11 @@ public class MemberService {
             LocationPostRequestDto locationRequest = request.getLocationPostRequestDto();
             System.out.println("LocationInfo" + locationRequest.getLocationInfo());
             locationRequest.setLocationIndex(0);
-            locationService.addLocation(member.getMemberId(), locationRequest);
+            locationService.addLocation(member.getMemberId(),locationRequest);
+
+            memberTasteService.createMemberTastes(member, request.getTasteIds());
+            closetService.createCloset(member,request.getClosetUpdateRequestDto());
+
             return member.getMemberId();
 
         } catch (DataIntegrityViolationException e) {
@@ -92,6 +96,6 @@ public class MemberService {
     }
 
 
-}
+    }
 
 

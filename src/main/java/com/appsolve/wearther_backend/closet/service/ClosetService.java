@@ -43,14 +43,12 @@ public class ClosetService {
     private final OtherWearRepository otherWearRepository;
     private final ClosetRepository closetRepository;
     private final TasteService tasteService;
-    private final AuthService authService;
-    private final MemberService memberService;
 
     public ClosetService(AuthService authService,
-                         ClosetUpperRepository closetUpperRepository, MemberRepository memberRepository, ClosetLowerRepository closetLowerRepository,
+                         ClosetUpperRepository closetUpperRepository, ClosetLowerRepository closetLowerRepository,
                          ClosetOtherRepository closetOtherRepository, ClosetRepository closetRepository,
                          UpperWearRepository upperWearRepository, LowerWearRepository lowerWearRepository,
-                         OtherWearRepository otherWearRepository, TasteService tasteService, MemberService memberService) {
+                         OtherWearRepository otherWearRepository, TasteService tasteService) {
         this.closetUpperRepository = closetUpperRepository;
         this.closetLowerRepository = closetLowerRepository;
         this.closetOtherRepository = closetOtherRepository;
@@ -59,8 +57,7 @@ public class ClosetService {
         this.otherWearRepository = otherWearRepository;
         this.closetRepository = closetRepository;
         this.tasteService = tasteService;
-        this.authService = authService;
-        this.memberService = memberService;
+
     }
 
     public ClosetResponseDto makeUserOwnClothesList(Long memberId) {
@@ -254,8 +251,7 @@ public class ClosetService {
                 .orElseThrow(() -> new RuntimeException("Other Wear not found"));
     }
 
-    public void createCloset(ClosetUpdateRequestDto updateRequestDto,String token) {
-        MemberEntity member = authService.getMemberEntityFromToken(token);
+    public void createCloset(MemberEntity member,ClosetUpdateRequestDto updateRequestDto) {
         Closet closet = Closet.createClosetByMember(member);
         Closet save = closetRepository.save(closet);
         member.setCloset(save);

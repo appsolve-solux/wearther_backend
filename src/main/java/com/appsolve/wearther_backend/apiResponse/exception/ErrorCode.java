@@ -33,6 +33,8 @@ public enum ErrorCode {
     DUPLICATE_LOCATION(HttpStatus.BAD_REQUEST, "LOCATION4001", "중복된 위치 정보입니다."),
     INDEX_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4003", "해당 사용자 정보에 존재하지 않는 인덱스입니다."),
     Weather_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4004", "날씨 정보를 가져올 수 없습니다"),
+    GENERAL_DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "DB5000", "데이터베이스 처리 중 오류가 발생했습니다."),
+
     TEMP_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4005", "체감온도를 구할 수 없습니다"),
 
     /* JWT 관련 에러 */
@@ -42,7 +44,9 @@ public enum ErrorCode {
     MISSING_TOKEN(HttpStatus.UNAUTHORIZED, "JWT4000", "JWT 토큰이 요청에 포함되어 있지 않습니다."),
     JWT_MALFORMED(HttpStatus.UNAUTHORIZED, "JWT4002", "JWT 토큰의 형식이 잘못되었습니다."), // 형식 오류
     UNSUPPORTED_JWT(HttpStatus.UNAUTHORIZED, "JWT4004", "지원하지 않는 JWT 토큰입니다."),
-    EMPTY_JWT(HttpStatus.UNAUTHORIZED, "JWT4005", "JWT 클레임이 비어 있습니다."); // 비어 있는 토큰
+    EMPTY_JWT(HttpStatus.UNAUTHORIZED, "JWT4005", "JWT 클레임이 비어 있습니다.");
+
+
 
     private final HttpStatus httpStatus;
     private final String code;

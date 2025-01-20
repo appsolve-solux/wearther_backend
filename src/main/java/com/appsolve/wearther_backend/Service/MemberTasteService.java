@@ -58,10 +58,8 @@ public class MemberTasteService {
     }
 
 
-    public void createMemberTastes(String token, List<Long> tasteIds) {
+    public void createMemberTastes(MemberEntity member, List<Long> tasteIds) {
 
-        MemberEntity member = authService.getMemberEntityFromToken(token);
-        System.out.println("memberId"+member.getMemberId());
         for (Long tasteId : tasteIds) {
 
             Taste taste = Taste.builder()
