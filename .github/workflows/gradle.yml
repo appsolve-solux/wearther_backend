@@ -72,7 +72,7 @@ jobs:
             git reset --hard origin/main
             echo "Pulling latest Docker image..."
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${{ github.sha }}
-            
+
             echo "Setting environment variables..."
             cat > .env <<EOL
             DB_NAME=${{ secrets.DB_NAME }}
@@ -87,14 +87,14 @@ jobs:
             JWT_EXPIRATION_REFRESH=2592000000
             WEATHER_SERVICE_KEY=${{ secrets.WEATHER_SERVICE_KEY }}
             EOL
-            echo "Starting Docker containers with docker-compose..."
-            docker-compose --env-file .env down
-            docker-compose --env-file .env up -d
+
+            echo "Recreating app service with docker-compose..."
+            docker-compose --env-file .env up -d --no-deps --build app
 
             echo "Checking Docker containers..."
             docker-compose ps
             echo "Deployment completed successfully!"
-            
+ 
   dependency-submission:
     runs-on: ubuntu-latest
     permissions:
