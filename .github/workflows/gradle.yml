@@ -88,13 +88,19 @@ jobs:
             WEATHER_SERVICE_KEY=${{ secrets.WEATHER_SERVICE_KEY }}
             EOL
 
-            echo "Recreating app service with docker-compose..."
-            docker-compose --env-file .env up -d --no-deps --build app
+            echo "Stopping spring-boot-app container..."
+            docker-compose --env-file .env stop spring-boot-app
+
+            echo "Removing spring-boot-app container..."
+            docker-compose --env-file .env rm -f spring-boot-app
+
+            echo "Recreating spring-boot-app service with docker-compose..."
+            docker-compose --env-file .env up -d --build spring-boot-app
 
             echo "Checking Docker containers..."
             docker-compose ps
             echo "Deployment completed successfully!"
- 
+
   dependency-submission:
     runs-on: ubuntu-latest
     permissions:
