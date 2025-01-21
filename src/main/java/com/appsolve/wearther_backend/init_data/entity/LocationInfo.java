@@ -12,7 +12,7 @@ public class LocationInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="code")
-    private String id;
+    private Long id;
 
     @Column(name="level1")
     private String level1;
