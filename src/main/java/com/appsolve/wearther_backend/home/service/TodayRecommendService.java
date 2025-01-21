@@ -1,5 +1,6 @@
 package com.appsolve.wearther_backend.home.service;
 
+import com.appsolve.wearther_backend.Repository.LocationRepository;
 import com.appsolve.wearther_backend.Service.MemberService;
 import com.appsolve.wearther_backend.Service.MemberTasteService;
 import com.appsolve.wearther_backend.Service.TasteService;
@@ -9,10 +10,11 @@ import com.appsolve.wearther_backend.closet.dto.ClosetResponseDto;
 import com.appsolve.wearther_backend.closet.service.ClosetService;
 import com.appsolve.wearther_backend.home.dto.RecommendResponseDto;
 import com.appsolve.wearther_backend.home.dto.WeatherResponseDto;
-
+import com.appsolve.wearther_backend.Entity.Location;
 import com.appsolve.wearther_backend.init_data.repository.WeatherLowerWearRepository;
 import com.appsolve.wearther_backend.init_data.repository.WeatherOtherWearRepository;
 import com.appsolve.wearther_backend.init_data.repository.WeatherUpperWearRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,10 +32,11 @@ public class TodayRecommendService {
     private final MemberTasteService memberTasteService;
     private final TasteService tasteService;
     private  final UvService uvService;
+    private final LocationRepository locationRepository;
 
     private WeatherResponseDto weatherResponseDto;
 
-    public TodayRecommendService(HomeWeatherService homeWeatherService, MemberService memberService, ClosetService closetService, WeatherUpperWearRepository weatherUpperWearRepository, WeatherLowerWearRepository weatherLowerWearRepository, WeatherOtherWearRepository weatherOtherWearRepository, MemberTasteService memberTasteService, TasteService tasteService, UvService uvService) {
+    public TodayRecommendService(HomeWeatherService homeWeatherService, MemberService memberService, ClosetService closetService, WeatherUpperWearRepository weatherUpperWearRepository, WeatherLowerWearRepository weatherLowerWearRepository, WeatherOtherWearRepository weatherOtherWearRepository, MemberTasteService memberTasteService, TasteService tasteService, UvService uvService, LocationRepository locationRepository) {
         this.homeWeatherService = homeWeatherService;
         this.memberService = memberService;
         this.closetService = closetService;
@@ -43,18 +46,19 @@ public class TodayRecommendService {
         this.memberTasteService = memberTasteService;
         this.tasteService = tasteService;
         this.uvService = uvService;
+        this.locationRepository = locationRepository;
     }
 
     // 날씨 데이터 초기화
-    private void initWeatherData(double latitude, double longitude) {
+    private void initWeatherData(Long memberId, Integer locationIndex) {
         if (this.weatherResponseDto == null) {
-            this.weatherResponseDto = homeWeatherService.getWeatherValue(latitude, longitude);
+            this.weatherResponseDto = homeWeatherService.getWeatherValue(memberId, locationIndex);
         }
     }
 
     // 기본 체감온도
-    private double getFeelLikeTemp(double latitude, double longitude) {
-        initWeatherData(latitude, longitude);
+    private double getFeelLikeTemp(Long memberId, Integer locationIndex) {
+        initWeatherData(memberId, locationIndex);
 
         try {
             String temperature = weatherResponseDto.getTemperature();
@@ -76,8 +80,8 @@ public class TodayRecommendService {
     }
 
     // 사용자 별 체감온도
-    private Long getWeatherId(Long memberId, double latitude, double longitude) {
-        double feelLikeTemp = getFeelLikeTemp(latitude, longitude);
+    private Long getWeatherId(Long memberId, Integer locationIndex) {
+        double feelLikeTemp = getFeelLikeTemp(memberId, locationIndex);
 
         // 체질 정보 가져오기
         int constitution = memberService.getConstitutionByMemberId(memberId);
@@ -99,10 +103,28 @@ public class TodayRecommendService {
     }
 
     // 추천 리스트 생성
-    private RecommendResponseDto getRecommend(Long memberId, double latitude, double longitude) {
-        initWeatherData(latitude, longitude);
+    private RecommendResponseDto getRecommend(Long memberId, Integer locationIndex) {
+        List<Location> locations = locationRepository.findLocationsByMember_MemberId(memberId);
+        Double latitude = null;
+        Double longitude = null;
 
-        Long weatherId = getWeatherId(memberId, latitude, longitude);
+        for (Location location : locations) {
+            if (location.getLocationIndex().equals(locationIndex)) {
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+                break;
+            }
+        }
+
+        if (latitude != null && longitude != null) {
+            System.out.println("Latitude: " + latitude + ", Longitude: " + longitude);
+        } else {
+            System.out.println("Location with index " + locationIndex + " not found.");
+        }
+
+        initWeatherData(memberId, locationIndex);
+
+        Long weatherId = getWeatherId(memberId, locationIndex);
 
         // 사용자 옷장 불러오기
         ClosetResponseDto closet = closetService.getOwnedClothes(memberId);
@@ -200,8 +222,8 @@ public class TodayRecommendService {
         return new RecommendResponseDto(upperRecommend, lowerRecommend, otherRecommend);
     }
 
-    public RecommendResponseDto getTodayRecommend(Long memberId, double latitude, double longitude) {
+    public RecommendResponseDto getTodayRecommend(Long memberId, Integer locationIndex) {
         this.weatherResponseDto = null;
-        return getRecommend(memberId, latitude, longitude);
+        return getRecommend(memberId, locationIndex);
     }
 }

@@ -1,5 +1,7 @@
 package com.appsolve.wearther_backend.home.service;
 
+import com.appsolve.wearther_backend.Entity.Location;
+import com.appsolve.wearther_backend.Repository.LocationRepository;
 import com.appsolve.wearther_backend.Service.LocationConverter;
 import com.appsolve.wearther_backend.apiResponse.exception.CustomException;
 import com.appsolve.wearther_backend.apiResponse.exception.ErrorCode;
@@ -30,8 +32,11 @@ import java.util.List;
 @Service
 public class HomeWeatherService {
     private final String serviceKey;
-    public HomeWeatherService(@Value("${weather.service-key}") String serviceKey) {
+    private final LocationRepository locationRepository;
+
+    public HomeWeatherService(@Value("${weather.service-key}") String serviceKey, LocationRepository locationRepository) {
         this.serviceKey = serviceKey;
+        this.locationRepository = locationRepository;
     }
     private static final String KMA_API_URL = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst";
 
@@ -195,8 +200,26 @@ public class HomeWeatherService {
         }
     }
 
-    // 최종 전체 날씨 데이터 반환
-    public WeatherResponseDto getWeatherValue(double latitude, double longitude) {
+    // 날씨 데이터 반환
+    public WeatherResponseDto getWeatherValue(Long memberId, Integer locationIndex) {
+        List<Location> locations = locationRepository.findLocationsByMember_MemberId(memberId);
+        Double latitude = null;
+        Double longitude = null;
+
+        for (Location location : locations) {
+            if (location.getLocationIndex().equals(locationIndex)) {
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+                break;
+            }
+        }
+
+        if (latitude != null && longitude != null) {
+            System.out.println("Latitude: " + latitude + ", Longitude: " + longitude);
+        } else {
+            System.out.println("Location with index " + locationIndex + " not found.");
+        }
+
         int[] convert = LocationConverter.latLonToGrid(latitude, longitude);
 
         LocalDateTime now = LocalDateTime.now();
@@ -226,7 +249,7 @@ public class HomeWeatherService {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-
-
     }
+
+
 }

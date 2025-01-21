@@ -25,17 +25,19 @@ public class HomeController {
         this.authService = authService;
     }
 
-    @GetMapping("/weather/{latitude}/{longitude}")
-    public ResponseEntity<ApiResponse<WeatherResponseDto>> getCurrentWeather (@PathVariable Double latitude, @PathVariable Double longitude){
-        WeatherResponseDto currentWeather = homeWeatherService.getWeatherValue(latitude, longitude);
+    @GetMapping("/weather/{locationIndex}")
+    public ResponseEntity<ApiResponse<WeatherResponseDto>> getCurrentWeather (@RequestHeader("Authorization") String token, @PathVariable Integer locationIndex) {
+        MemberEntity member =  authService.getMemberEntityFromToken(token);
+        Long memberId = member.getMemberId();
+        WeatherResponseDto currentWeather = homeWeatherService.getWeatherValue(memberId, locationIndex);
         return ApiResponse.success(HttpStatus.OK, currentWeather);
     }
 
-    @GetMapping("/recommend/{latitude}/{longitude}")
-    public ResponseEntity<ApiResponse<RecommendResponseDto>> getTodayRecommend (@RequestHeader("Authorization") String token, @PathVariable Double latitude, @PathVariable Double longitude){
+    @GetMapping("/recommend/{locationIndex}")
+    public ResponseEntity<ApiResponse<RecommendResponseDto>> getTodayRecommend (@RequestHeader("Authorization") String token, @PathVariable Integer locationIndex){
         MemberEntity member =  authService.getMemberEntityFromToken(token);
         Long memberId = member.getMemberId();
-        RecommendResponseDto todayRecommend = todayRecommendService.getTodayRecommend(memberId, latitude, longitude);
+        RecommendResponseDto todayRecommend = todayRecommendService.getTodayRecommend(memberId, locationIndex);
         return ApiResponse.success(HttpStatus.OK, todayRecommend);
     }
 }
