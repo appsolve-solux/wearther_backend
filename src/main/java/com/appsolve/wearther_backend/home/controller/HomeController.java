@@ -26,17 +26,15 @@ public class HomeController {
     }
 
     @GetMapping("/weather/{locationIndex}")
-    public ResponseEntity<ApiResponse<WeatherResponseDto>> getCurrentWeather (@RequestHeader("Authorization") String token, @PathVariable Integer locationIndex) {
-        MemberEntity member =  authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
+    public ResponseEntity<ApiResponse<WeatherResponseDto>> getCurrentWeather (@PathVariable Integer locationIndex) {
+        Long memberId = authService.extractMemberIdFromContext();
         WeatherResponseDto currentWeather = homeWeatherService.getWeatherValue(memberId, locationIndex);
         return ApiResponse.success(HttpStatus.OK, currentWeather);
     }
 
     @GetMapping("/recommend/{locationIndex}")
-    public ResponseEntity<ApiResponse<RecommendResponseDto>> getTodayRecommend (@RequestHeader("Authorization") String token, @PathVariable Integer locationIndex){
-        MemberEntity member =  authService.getMemberEntityFromToken(token);
-        Long memberId = member.getMemberId();
+    public ResponseEntity<ApiResponse<RecommendResponseDto>> getTodayRecommend (@PathVariable Integer locationIndex){
+        Long memberId = authService.extractMemberIdFromContext();
         RecommendResponseDto todayRecommend = todayRecommendService.getTodayRecommend(memberId, locationIndex);
         return ApiResponse.success(HttpStatus.OK, todayRecommend);
     }
