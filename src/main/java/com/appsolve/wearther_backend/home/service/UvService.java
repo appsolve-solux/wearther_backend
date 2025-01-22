@@ -40,7 +40,7 @@ public class UvService {
     private static final String KMA_API_URL = "http://apis.data.go.kr/1360000/LivingWthrIdxServiceV4/getUVIdxV4";
 
     // api 호출
-    public String getWeatherData(String areaNo) throws URISyntaxException {
+    public String getWeatherData(Long areaNo) throws URISyntaxException {
         List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
         messageConverters.add(new StringHttpMessageConverter());
         messageConverters.add(new Jaxb2RootElementHttpMessageConverter());
@@ -94,7 +94,7 @@ public class UvService {
         throw new CustomException(ErrorCode.Weather_NOT_FOUND);
     }
 
-    public String getLocationCode(String gridX, String gridY) {
+    public Long getLocationCode(String gridX, String gridY) {
         return locationInfoRepository.findByGridXAndGridY(gridX, gridY)
                 .stream()
                 .map(LocationInfo::getId)
@@ -109,7 +109,7 @@ public class UvService {
         String x = String.valueOf(convert[0]);
         String y = String.valueOf(convert[1]);
 
-        String locationCode = getLocationCode(x, y);
+        Long locationCode = getLocationCode(x, y);
 
         try {
             String uvValue = parseUV(getWeatherData(locationCode));
