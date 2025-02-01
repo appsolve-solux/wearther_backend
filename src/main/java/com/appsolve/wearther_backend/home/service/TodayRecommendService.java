@@ -13,6 +13,7 @@ import com.appsolve.wearther_backend.home.dto.WeatherResponseDto;
 import com.appsolve.wearther_backend.Entity.Location;
 import com.appsolve.wearther_backend.init_data.repository.WeatherLowerWearRepository;
 import com.appsolve.wearther_backend.init_data.repository.WeatherOtherWearRepository;
+import com.appsolve.wearther_backend.init_data.repository.WeatherRepostory;
 import com.appsolve.wearther_backend.init_data.repository.WeatherUpperWearRepository;
 
 import org.springframework.stereotype.Service;
@@ -33,10 +34,11 @@ public class TodayRecommendService {
     private final TasteService tasteService;
     private  final UvService uvService;
     private final LocationRepository locationRepository;
+    private final WeatherRepostory weatherRepostory;
 
     private WeatherResponseDto weatherResponseDto;
 
-    public TodayRecommendService(HomeWeatherService homeWeatherService, MemberService memberService, ClosetService closetService, WeatherUpperWearRepository weatherUpperWearRepository, WeatherLowerWearRepository weatherLowerWearRepository, WeatherOtherWearRepository weatherOtherWearRepository, MemberTasteService memberTasteService, TasteService tasteService, UvService uvService, LocationRepository locationRepository) {
+    public TodayRecommendService(HomeWeatherService homeWeatherService, MemberService memberService, ClosetService closetService, WeatherUpperWearRepository weatherUpperWearRepository, WeatherLowerWearRepository weatherLowerWearRepository, WeatherOtherWearRepository weatherOtherWearRepository, MemberTasteService memberTasteService, TasteService tasteService, UvService uvService, LocationRepository locationRepository, WeatherRepostory weatherRepostory) {
         this.homeWeatherService = homeWeatherService;
         this.memberService = memberService;
         this.closetService = closetService;
@@ -47,6 +49,7 @@ public class TodayRecommendService {
         this.tasteService = tasteService;
         this.uvService = uvService;
         this.locationRepository = locationRepository;
+        this.weatherRepostory = weatherRepostory;
     }
 
     // 날씨 데이터 초기화
@@ -212,6 +215,8 @@ public class TodayRecommendService {
 
         System.out.println("최종 weatherID : " + weatherId);
 
+        String weatherInfo = weatherRepostory.findByWeatherId(weatherId);
+
         // 기타 추천 리스트
         List<Long> otherRecommend = weatherOtherWearRepository.findByWeatherId(weatherId).stream()
                 .map(weatherOtherWear -> weatherOtherWear.getOtherWear().getId())
@@ -219,7 +224,7 @@ public class TodayRecommendService {
                 .collect(Collectors.toList());
 
         System.out.println("추천 리스트 - 상의: " + upperRecommend + " 하의: " + lowerRecommend + " 기타: " + otherRecommend);
-        return new RecommendResponseDto(upperRecommend, lowerRecommend, otherRecommend);
+        return new RecommendResponseDto(upperRecommend, lowerRecommend, otherRecommend, weatherInfo);
     }
 
     public RecommendResponseDto getTodayRecommend(Long memberId, Integer locationIndex) {

@@ -11,4 +11,5 @@ public class RecommendResponseDto {
     private List<Long> upper;
     private List<Long> lower;
     private List<Long> other;
+    private String weatherInfo;
 }
