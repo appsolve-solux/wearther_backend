@@ -12,10 +12,10 @@
 
 | 이름  | 역할분담 |
 |-----| ------ |
-| 권정우 |홈 화면|
-| 백서연 |위치·취향·옷 관리, 마이페이지|
-| 윤선희 |회원가입, 로그인, 로그아웃|
-| 최연재 |ERD 디자인, 옷장, CI/CD 파이프라인 구축(배포)|
+| <a href="https://github.com/jungwoow">권정우</a> |홈 화면|
+| <a href="https://github.com/seoyeonsw">백서연</a> |위치·취향·옷 관리, 마이페이지|
+| <a href="https://github.com/qlcskcode">윤선희</a> |회원가입, 로그인, 로그아웃|
+| <a href="https://github.com/yeonjae02">최연재</a> |ERD 디자인, 옷장, CI/CD 파이프라인 구축(배포)|
 
 ## 🌳 프로젝트 구조
 ```
