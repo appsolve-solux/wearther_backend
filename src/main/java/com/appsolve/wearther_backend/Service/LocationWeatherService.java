@@ -65,27 +65,40 @@ public class LocationWeatherService {
         // 현재 시간을 기준으로 적절한 baseTime 설정
         String baseTime;
         int hour = now.getHour();
-        if (hour >= 0 && hour < 3) {
+        int minute = now.getMinute();
+        if (hour < 2 || (hour == 2 && minute <= 30)) {
+            System.out.println("정우 현재 시간은 2300");
+            baseTime = "2300";
+        } else if (hour < 5 || (hour == 5 && minute <= 30)) {
+            System.out.println("정우 현재 시간은 0200");
             baseTime = "0200";
-        } else if (hour >= 3 && hour < 6) {
+        } else if (hour < 8 || (hour == 8 && minute <= 30)) {
+            System.out.println("현재 시간은 0500");
             baseTime = "0500";
-        } else if (hour >= 6 && hour < 9) {
+        } else if (hour < 11 || (hour == 11 && minute <= 30)) {
+            System.out.println("현재 시간은 0800");
             baseTime = "0800";
-        } else if (hour >= 9 && hour < 12) {
+        } else if (hour < 14 || (hour == 14 && minute <= 30)) {
+            System.out.println("현재 시간은 1100");
             baseTime = "1100";
-        } else if (hour >= 12 && hour < 15) {
+        } else if (hour < 17 || (hour == 17 && minute <= 30)) {
+            System.out.println("현재 시간은 1400");
             baseTime = "1400";
-        } else if (hour >= 15 && hour < 18) {
+        } else if (hour < 20 || (hour == 20 && minute <= 30)) {
+            System.out.println("정우 현재 시간은 1700");
             baseTime = "1700";
-        } else if (hour >= 18 && hour < 21) {
+        } else if (hour < 23 || (hour == 23 && minute <= 30)) {
+            System.out.println("정우 현재 시간은 2000");
             baseTime = "2000";
         } else {
+            System.out.println("현재 시간은 2300");
             baseTime = "2300";
         }
 
+        System.out.println("서연 현재 시간은 " + baseTime);
 
         String url = String.format(
-                "%s?serviceKey=%s&pageNo=1&numOfRows=10&dataType=XML&base_date=%s&base_time=%s&nx=%d&ny=%d",
+                "%s?serviceKey=%s&pageNo=1&numOfRows=50&dataType=XML&base_date=%s&base_time=%s&nx=%d&ny=%d",
                 KMA_API_URL, serviceKey, baseDate, baseTime, x, y);
 
         System.out.println("Request URL: " + url);
@@ -105,13 +118,16 @@ public class LocationWeatherService {
             Document doc = builder.parse(inputSource);
 
             // "category" 요소가 "TMP"인 값을 찾음
+            int currentHour = LocalDateTime.now().getHour() * 100;
             NodeList nodeList = doc.getElementsByTagName("item");
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) node;
                     String category = element.getElementsByTagName("category").item(0).getTextContent();
-                    if ("TMP".equals(category)) {
+                    String fcstTime = element.getElementsByTagName("fcstTime").item(0).getTextContent();
+
+                    if ("TMP".equals(category) && currentHour == Integer.parseInt(fcstTime)) {
                         // 온도 값 추출
                         String temperature = element.getElementsByTagName("fcstValue").item(0).getTextContent();
                         return temperature + "°C";
